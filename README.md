@@ -1,3 +1,7 @@
+<p align="center">
+  <img src='images/arXie_300.png' />
+</p>
+
 # arXie Slack Bot
 
 ### arXiv {pronounced *archive*}, arXie {pronounced... *archie*}
