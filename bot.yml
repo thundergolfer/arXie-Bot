@@ -1,6 +1,6 @@
-name: Beepboop Starterbot
+name: arXie Research Assistant
 description: A simple Python bot sample for Beep Boop
-avatar: resources/avatar.png
+avatar: images/arXie_300.png
 background: resources/background.png
 config:
   - name: LOG_LEVEL
