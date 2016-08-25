@@ -1,14 +1,18 @@
 import json
 import logging
 import re
+from private_settings import apiai_access_token
+import apiai
 
 logger = logging.getLogger(__name__)
-
+API_ACCESS_TOKEN = apiai_access_token
 
 class RtmEventHandler(object):
-    def __init__(self, slack_clients, msg_writer):
+    def __init__(self, slack_clients, msg_writer, intent_handler):
         self.clients = slack_clients
         self.msg_writer = msg_writer
+        self.intent_handler = intent_handler
+        self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN) # TODO make dependency injection instead
 
     def handle(self, event):
 
@@ -33,20 +37,36 @@ class RtmEventHandler(object):
             pass
 
     def _handle_message(self, event):
-        # Filter out messages from the bot itself
-        if not self.clients.is_message_from_me(event['user']):
+        # Filter out messages from the bot itself, and from non-users (eg. webhooks)
+        if ('user' in event) and (not self.clients.is_message_from_me(event['user'])):
 
             msg_txt = event['text']
-
             if self.clients.is_bot_mention(msg_txt):
                 # e.g. user typed: "@pybot tell me a joke!"
+                msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
                 if 'help' in msg_txt:
                     self.msg_writer.write_help_message(event['channel'])
-                elif re.search('hi|hey|hello|howdy', msg_txt):
-                    self.msg_writer.write_greeting(event['channel'], event['user'])
-                elif 'joke' in msg_txt:
-                    self.msg_writer.write_joke(event['channel'])
                 elif 'attachment' in msg_txt:
                     self.msg_writer.demo_attachment(event['channel'])
                 else:
-                    self.msg_writer.write_prompt(event['channel'])
+                    # determine intent
+                    resp = self.process_message(msg_txt)
+                    # handle intent
+                    txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'] )
+                    # send message
+                    self.msg_writer.send_message( event['channel'], txt, attachments )
+
+    def process_message(self, msg_txt ):
+        """
+        Process the message body through API AI's system to get the intent
+        of the message and update the context if needed.
+        """
+        request = self.api_ai.text_request()
+        request.query = msg_txt
+        # get json response as bytes and decode it into a string
+        resp = request.getresponse().read().decode('utf-8')
+        resp = json.loads(resp) # convert string to json dict
+        return { 'contexts' : resp['result']['contexts'] if 'contexts' in resp else None,
+                 'intent' : resp['result']['metadata']['intentName'],
+                 'parameters' : resp['result']['parameters']
+               }

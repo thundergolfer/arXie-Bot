@@ -5,6 +5,7 @@ import traceback
 from slack_clients import SlackClients
 from messenger import Messenger
 from event_handler import RtmEventHandler
+from intent_handler import ApiAiIntentHandler
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,8 @@ class SlackBot(object):
                 self.clients.rtm.server.domain))
 
             msg_writer = Messenger(self.clients)
-            event_handler = RtmEventHandler(self.clients, msg_writer)
+            intent_handler = ApiAiIntentHandler(self.clients)
+            event_handler = RtmEventHandler(self.clients, msg_writer, intent_handler)
 
             while self.keep_running:
                 for event in self.clients.rtm.rtm_read():
