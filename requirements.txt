@@ -1,6 +1,11 @@
+apiai==1.0.2
+beautifulsoup4==4.5.1
 beepboop==0.1.1
+bs4==0.0.1
 docutils==0.12
 lockfile==0.12.2
+lxml==3.6.4
+numpy==1.11.1
 python-daemon==2.1.1
 PyYAML==3.11
 requests==2.9.1
