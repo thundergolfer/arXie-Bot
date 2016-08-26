@@ -15,7 +15,7 @@ def papers_from_embedded_script( url ):
     Note: looks for "var papers = " in a <script> </script> body.
     """
     resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'lxml')
+    soup = BeautifulSoup(resp.text, 'html.parser')
     scripts = soup.find_all('script')
     #p = re.compile('var papers = (\[.*?\];)', re.MULTILINE)
     p = re.compile('var papers = \[.*?\];')
