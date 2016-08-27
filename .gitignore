@@ -84,6 +84,10 @@ celerybeat-schedule
 # dotenv
 .env
 
+# ignore compiled python
+*.pyc
+*/*.pyc
+
 # virtualenv
 .venv/
 venv/

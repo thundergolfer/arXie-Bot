@@ -5,6 +5,8 @@
 
 ### arXiv {pronounced *archive*}, arXie {pronounced... *archie*}
 
+#### STATUS : Publishing of this bot is currently held up by `numpy` build issues on BeepBoop
+
 arXie is a Slack bot that browses and filters the arXiv repository for you. You're kept informed on what's happening in Machine Learning and AI with minimal effort.
 
 This production of this bot was motivated by this question in Google Brain's [r/machinelearning AMA](https://www.reddit.com/r/MachineLearning/comments/4w6tsv/ama_we_are_the_google_brain_team_wed_love_to/?st=irvvkvu4&sh=b50d5ce3)
