@@ -9,12 +9,13 @@ def paper_titles( soup ):
     """ Extract paper titles from the ASP site's HTML. """
     raise NotImplementedError
 
-def papers_from_embedded_script( url ):
+def papers_from_embedded_script( url, session=None ):
     """
     Extract papers data from script embedded in ASP site's HTML.
     Note: looks for "var papers = " in a <script> </script> body.
     """
-    resp = requests.get(url)
+    if session: resp = session.get(url)
+    else:       resp = requests.get(url)
     soup = BeautifulSoup(resp.text, 'html.parser')
     scripts = soup.find_all('script')
     #p = re.compile('var papers = (\[.*?\];)', re.MULTILINE)

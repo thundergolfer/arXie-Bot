@@ -5,6 +5,8 @@ from private_settings import apiai_access_token
 import apiai
 
 import sqlite3
+import requests
+from site_scraping import papers_from_embedded_script
 
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = apiai_access_token
@@ -46,19 +48,42 @@ class RtmEventHandler(object):
         # If they don't have an account, create an account for them
         user, pw = self._handle_account_setup(event)
         # then login
-        raise NotImplementedError
+        status_code, session = self._login(user, pw)
+
+    def _login(self, user, pw):
+        """ Login using named credentials and pass back the Session. """
+        login_url = 'http://www.arxiv-sanity.com/login'
+        s = requests.Session()
+        s.headers.update({'Referer' : 'http://arxiv-sanity.com/'}) # TODO add more relevant headers
+        payload = {
+            'username' : 'thundergolfer',
+            'password' : 'mnijb233'
+        }
+        p = s.post(login_url, data=payload)
+        return p.status_code, s
 
     def _handle_account_setup(self, event, username_choice=None, pw_choice=None):
-        # Open database connections
-        connection = sqlite3.connect('../accounts.db')
+        # 1. Ask for their preferred username and password
 
-        connection.execute( 'CREATE TABLE IF NOT EXISTS' +
-                            TABLE_NAME,
-                            )
+        # 2. Check if the username is available by attempting logon
+
+        # Opt: re-prompt for a different username
+
+        # 3. Login success! Let's add them to our database for later use
+        # Open database connections
+        conn = sqlite3.connect('../accounts.db')
+        uid = event['user'][1:] # remove lead "U". assuming the user id is unique. !!!
+        TABLE_NAME = ' accounts'
+        conn.execute( 'create table if not exists accounts(uid integer PRIMARY KEY, username text, password text)' )
         # create entry
+        conn.execute("INSERT INTO accounts VALUES (?, ?, ?)", ( uid,
+                                                                   username_choice,
+                                                                   pw_choice))
+        conn.commit() # save changes
+        conn.close() # we are finished with the connection
 
         # return login details
-        raise NotImplementedError
+        return username_choice, pw_choice
 
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)

@@ -12,6 +12,9 @@ bot/__pycache__/
 # C extensions
 *.so
 
+# database files
+*.db
+
 # Distribution / packaging
 .Python
 env/
