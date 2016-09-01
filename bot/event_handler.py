@@ -4,6 +4,8 @@ import re
 from private_settings import apiai_access_token
 import apiai
 
+import sqlite3
+
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = apiai_access_token
 
@@ -35,6 +37,28 @@ class RtmEventHandler(object):
             self.msg_writer.write_help_message(event['channel'])
         else:
             pass
+
+    def _handle_login(self, event):
+        # Log in message sender if they exist in database (aren't already logged in)
+
+        # If message sender doesn't exist, ask if they have an account
+
+        # If they don't have an account, create an account for them
+        user, pw = self._handle_account_setup(event)
+        # then login
+        raise NotImplementedError
+
+    def _handle_account_setup(self, event, username_choice=None, pw_choice=None):
+        # Open database connections
+        connection = sqlite3.connect('../accounts.db')
+
+        connection.execute( 'CREATE TABLE IF NOT EXISTS' +
+                            TABLE_NAME,
+                            )
+        # create entry
+
+        # return login details
+        raise NotImplementedError
 
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)

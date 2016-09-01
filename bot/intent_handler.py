@@ -45,7 +45,7 @@ class ApiAiIntentHandler(object):
         bot_uid = self.clients.bot_user_id()
         attached_papers = []
         # For each paper
-        for i in range(num_papers):
+        for i in range(max(num_papers,len(papers)):
             attach = {}
             entry = ""
             # Make title line with link to article
