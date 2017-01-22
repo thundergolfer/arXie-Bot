@@ -4,17 +4,6 @@ import json
 
 logger = logging.getLogger(__name__)
 
-def build_message(text='Default Text',
-                        markdown=True):
-    """ Combine individual parts of a message into one formatted json message body. """
-    if markdown:
-        message = {}
-        message['text'] = text
-        message['mrkdwn'] = markdown
-        json_str = json.dumps(message) # validate json. TODO should catch failure
-        return json_str
-    return text
-
 class Messenger(object):
     def __init__(self, slack_clients):
         self.clients = slack_clients
