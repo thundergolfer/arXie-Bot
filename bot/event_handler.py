@@ -17,6 +17,7 @@ class RtmEventHandler(object):
         self.msg_writer = msg_writer
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN) # TODO make dependency injection instead
+        self.session = None
 
     def handle(self, event):
 
@@ -46,9 +47,11 @@ class RtmEventHandler(object):
         # If message sender doesn't exist, ask if they have an account
 
         # If they don't have an account, create an account for them
+        # TODO try and load account details
         user, pw = self._handle_account_setup(event)
         # then login
         status_code, session = self._login(user, pw)
+        self.session = session # we're gonna keep needing this
 
     def _login(self, user, pw):
         """ Login using named credentials and pass back the Session. """
@@ -88,10 +91,12 @@ class RtmEventHandler(object):
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)
         if ('user' in event) and (not self.clients.is_message_from_me(event['user'])):
+            if not self.session:
+                self._handle_login(event) # creates a session
 
             msg_txt = event['text']
             if self.clients.is_bot_mention(msg_txt):
-                # e.g. user typed: "@pybot tell me a joke!"
+                # e.g. user typed: "@arxie-bot tell me a joke!"
                 msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
                 if 'help' in msg_txt:
                     self.msg_writer.write_help_message(event['channel'])
@@ -101,7 +106,7 @@ class RtmEventHandler(object):
                     # determine intent
                     resp = self.process_message(msg_txt)
                     # handle intent
-                    txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'] )
+                    txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
                     # send message
                     self.msg_writer.send_message( event['channel'], txt, attachments )
 

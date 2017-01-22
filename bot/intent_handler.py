@@ -20,7 +20,7 @@ class ApiAiIntentHandler(object):
         """ Build the URL to link to a paper's PDF. """
         return ASP_BaseURL + 'pdf/' + paper_id + '.pdf'
 
-    def handle_intent(self, msg_txt, intent, parameters=None, context=None ):
+    def handle_intent(self, msg_txt, intent, session, parameters=None, context=None ):
         """
         Receive an intent string and select the correct intent handling function.
         """
@@ -52,7 +52,7 @@ class ApiAiIntentHandler(object):
         # build the json message object
         return build_message( text="*Search Results*", markdown=False, parts=attached_papers)
 
-    def clear_library(self, user):
+    def clear_library(self, session):
         """ Remove all saved paper's from the users library. """
         # The way to do this is to fetch all papers and then call "toggle"
         # on all of them.
@@ -62,17 +62,17 @@ class ApiAiIntentHandler(object):
         toggleURL = ASP_BaseURL + "/libtoggle"
         for p in papers:
             # toggle off each paper from library
-            r = requests.post(toggleURL, data = {'pid':p["pid"]})
+            r = session.post(toggleURL, data = {'pid':p["pid"]})
             if r.status_code != 200:
                 # TODO log error. pass up to user?
                 pass
 
-    def get_library(self, user):
+    def get_library(self, session):
         """ Get all papers saved by the user. Their 'library'. """
         # TODO check if logged in?
         # TODO NEED TO PASS SESSION!!!!!
         libraryURL = ASP_BaseURL + "/library"
-        papers = papers_from_embedded_script(libraryURL)
+        papers = papers_from_embedded_script(libraryURL, session=session)
         attached_papers = []
         for p in papers:
             attached_papers.append(paper_snippet(p))
@@ -92,24 +92,24 @@ class ApiAiIntentHandler(object):
         """ Return specified paper from within the set. """
         raise NotImplementedError
 
-    def get_recommended(self, user):
+    def get_recommended(self, session):
         """ Get the papers recommended to the user based on their
         saved papers and their search domain. """
         # TODO the /recommend endpoint has FILTERS
         recommendedURL = ASP_BaseURL + "/recommend"
-        papers = papers_from_embedded_script(recommendedURL, user.session)
+        papers = papers_from_embedded_script(recommendedURL, session)
         attached_papers = []
         for p in papers:
             attached_papers.append(paper_snippet(p))
         return build_message( text="*Your Recommended*", markdown=False, parts=attached_papers)
 
-    def get_top_recent(self, user):
+    def get_top_recent(self, session):
         """
         Get the 'top' recent papers within the user's search domain.
         """
         # TODO the /top endpoint has FILTERS
         topURL = ASP_BaseURL + "/top" # default filters
-        papers = papers_from_embedded_script(topURL, user.session)
+        papers = papers_from_embedded_script(topURL, session=session)
         attached_papers = []
         for p in papers:
             attached_papers.append(paper_snippet(p))
@@ -130,11 +130,11 @@ class ApiAiIntentHandler(object):
         """
         return build_message( text=ASP_BaseURL, markdown=False, parts=None)
 
-    def save_paper(self, paper, user):
+    def save_paper(self, paper, session):
         """
         Save the named paper, which adds that paper to the user's library. """
         toggleURL = ASP_BaseURL + "/libtoggle"
-        r = user.session.post(toggleURL, data = {'pid':p["pid"]})
+        r = session.post(toggleURL, data = {'pid':p["pid"]})
         if r.status_code != 200:
             # TODO log error to user somewho
             raise Exception("Paper save failed!")
