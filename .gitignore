@@ -105,3 +105,7 @@ ENV/
 
 # VirtualEnv Environment Files
 *env*/
+
+# Block credentials upload
+bot/private_settings.*
+private_settings.*
