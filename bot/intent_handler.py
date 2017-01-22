@@ -88,9 +88,11 @@ class ApiAiIntentHandler(object):
             attached_papers.append(paper_snippet(p))
         return build_message( text="*Your Most Recent*", markdown=False, parts=attached_papers)
 
-    def get_paper(self, set, id):
+    def get_paper(self, set, pid):
         """ Return specified paper from within the set. """
-        raise NotImplementedError
+        paperURL = ASP_BaseURL + "/" + str(pid)
+        paper = papers_from_embedded_script(paperURL)[0] # only get first, rest are related papers
+        return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(p)])
 
     def get_recommended(self, session):
         """ Get the papers recommended to the user based on their
