@@ -17,7 +17,7 @@ class RtmEventHandler(object):
         self.msg_writer = msg_writer
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN) # TODO make dependency injection instead
-        self.session = None
+        self.sessions = None
 
     def handle(self, event):
 
@@ -51,7 +51,7 @@ class RtmEventHandler(object):
         user, pw = self._handle_account_setup(event)
         # then login
         status_code, session = self._login(user, pw)
-        self.session = session # we're gonna keep needing this
+        self.session[event['user']] = session # we're gonna keep needing this
 
     def _login(self, user, pw):
         """ Login using named credentials and pass back the Session. """
@@ -91,7 +91,7 @@ class RtmEventHandler(object):
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)
         if ('user' in event) and (not self.clients.is_message_from_me(event['user'])):
-            if not self.session:
+            if not self.sessions['user']:
                 self._handle_login(event) # creates a session
 
             msg_txt = event['text']
