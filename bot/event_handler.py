@@ -1,7 +1,8 @@
+import os
 import json
 import logging
 import re
-from private_settings import apiai_access_token
+# from private_settings import apiai_access_token
 import apiai
 
 import sqlite3
@@ -9,7 +10,7 @@ import requests
 from site_scraping import papers_from_embedded_script
 
 logger = logging.getLogger(__name__)
-API_ACCESS_TOKEN = apiai_access_token
+API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
 
 class RtmEventHandler(object):
     def __init__(self, slack_clients, msg_writer, intent_handler):
@@ -74,16 +75,18 @@ class RtmEventHandler(object):
 
         # 3. Login success! Let's add them to our database for later use
         # Open database connections
-        conn = sqlite3.connect('../accounts.db')
-        uid = event['user'][1:] # remove lead "U". assuming the user id is unique. !!!
-        TABLE_NAME = ' accounts'
-        conn.execute( 'create table if not exists accounts(uid integer PRIMARY KEY, username text, password text)' )
-        # create entry
-        conn.execute("INSERT INTO accounts VALUES (?, ?, ?)", ( uid,
-                                                                   username_choice,
-                                                                   pw_choice))
-        conn.commit() # save changes
-        conn.close() # we are finished with the connection
+        # conn = sqlite3.connect('../accounts.db')
+        # uid = event['user'][1:] # remove lead "U". assuming the user id is unique. !!!
+        # TABLE_NAME = ' accounts'
+        # conn.execute( 'create table if not exists accounts(uid integer PRIMARY KEY, username text, password text)' )
+        # # create entry
+        # conn.execute("INSERT INTO accounts VALUES (?, ?, ?)", ( uid,
+        #                                                            username_choice,
+        #                                                            pw_choice))
+        # conn.commit() # save changes
+        # conn.close() # we are finished with the connection
+        username_choice = None # TODO stubbed
+        pw_choice = None # TODO stubbed
 
         # return login details
         return username_choice, pw_choice
@@ -91,8 +94,6 @@ class RtmEventHandler(object):
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)
         if ('user' in event) and (not self.clients.is_message_from_me(event['user'])):
-            if not self.sessions['user']:
-                self._handle_login(event) # creates a session
 
             msg_txt = event['text']
             if self.clients.is_bot_mention(msg_txt):
@@ -103,6 +104,8 @@ class RtmEventHandler(object):
                 elif 'attachment' in msg_txt:
                     self.msg_writer.demo_attachment(event['channel'])
                 else:
+                    if not self.sessions['user']:
+                        self._handle_login(event) # creates a session
                     # determine intent
                     resp = self.process_message(msg_txt)
                     # handle intent
