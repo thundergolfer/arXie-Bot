@@ -19,4 +19,4 @@ config:
     default: NOT A VALID TOKEN
     global: true
 screenshots:
-  - screenshot: resources/screenshot1.png
+  #- screenshot: resources/screenshot1.png
