@@ -45,7 +45,7 @@ class ApiAiIntentHandler(object):
         bot_uid = self.clients.bot_user_id()
         attached_papers = []
         # For each paper
-        for i in range(max(num_papers,len(papers)):
+        for i in range(max(num_papers,len(papers))):
             attached_papers.append(paper_snippet(papers[i])))
 
         attached_papers[-1]['footer'] = "> `<@" + bot_uid + "> show more papers` - to see more papers"
