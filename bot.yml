@@ -1,7 +1,7 @@
 name: arXie Research Assistant
 description: arxie makes keeping up with machine learning research easy
 avatar: images/arXie_300.png
-background: resources/background.png
+background: images/background.jpg
 config:
   - name: LOG_LEVEL
     friendly_name: Severity level to show for logging.
