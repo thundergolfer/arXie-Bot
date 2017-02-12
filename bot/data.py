@@ -10,4 +10,11 @@ def create_db():
 def erase_db():
     raise NotImplementedError
 
-def add_user(
+def add_user(user, pw):
+    raise NotImplementedError
+
+def get_user(slack_user):
+    raise NotImplementedError
+
+def delete_user(slack_user):
+    raise NotImplementedError

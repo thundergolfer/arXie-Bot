@@ -12,6 +12,8 @@ from site_scraping import papers_from_embedded_script
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
 
+TASKS = { "sign-up" : "SIGNUP"}
+
 class RtmEventHandler(object):
     def __init__(self, slack_clients, msg_writer, intent_handler):
         self.clients = slack_clients
@@ -19,6 +21,7 @@ class RtmEventHandler(object):
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN) # TODO make dependency injection instead
         self.sessions = None
+        self.tasks = {} # For mult-message spanning tasks
 
     def handle(self, event):
 
@@ -43,16 +46,25 @@ class RtmEventHandler(object):
             pass
 
     def _handle_login(self, event):
-        # Log in message sender if they exist in database (aren't already logged in)
+        # Log in message sender if they exist
+        user, pw = get_user(event['user'])
+        # Are the login details in the message?
+        user, pw = parse_login_details(event['text'])
+        if user and pw:
+            # then login
+            status_code, session = self._login(user, pw)
+            self.session[event['user']] = session # we're gonna keep needing this
+            return True
+        return False
 
-        # If message sender doesn't exist, ask if they have an account
-
-        # If they don't have an account, create an account for them
-        # TODO try and load account details
-        user, pw = self._handle_account_setup(event)
-        # then login
-        status_code, session = self._login(user, pw)
-        self.session[event['user']] = session # we're gonna keep needing this
+    def parse_login_details( msg_text ):
+        msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
+        tokens = msg_text.split(' ')
+        # Check string format
+        if len(tokens) == 4 and tokens[0] == 'user:' and tokens[2] == 'pw:':
+            return tokens[1], tokens[3]
+        else:
+            return None, None
 
     def _login(self, user, pw):
         """ Login using named credentials and pass back the Session. """
@@ -65,31 +77,6 @@ class RtmEventHandler(object):
         }
         p = s.post(login_url, data=payload)
         return p.status_code, s
-
-    def _handle_account_setup(self, event, username_choice=None, pw_choice=None):
-        # 1. Ask for their preferred username and password
-
-        # 2. Check if the username is available by attempting logon
-
-        # Opt: re-prompt for a different username
-
-        # 3. Login success! Let's add them to our database for later use
-        # Open database connections
-        # conn = sqlite3.connect('../accounts.db')
-        # uid = event['user'][1:] # remove lead "U". assuming the user id is unique. !!!
-        # TABLE_NAME = ' accounts'
-        # conn.execute( 'create table if not exists accounts(uid integer PRIMARY KEY, username text, password text)' )
-        # # create entry
-        # conn.execute("INSERT INTO accounts VALUES (?, ?, ?)", ( uid,
-        #                                                            username_choice,
-        #                                                            pw_choice))
-        # conn.commit() # save changes
-        # conn.close() # we are finished with the connection
-        username_choice = None # TODO stubbed
-        pw_choice = None # TODO stubbed
-
-        # return login details
-        return username_choice, pw_choice
 
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)
@@ -105,13 +92,18 @@ class RtmEventHandler(object):
                     self.msg_writer.demo_attachment(event['channel'])
                 else:
                     if not self.sessions['user']:
-                        self._handle_login(event) # creates a session
-                    # determine intent
-                    resp = self.process_message(msg_txt)
-                    # handle intent
-                    txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
-                    # send message
-                    self.msg_writer.send_message( event['channel'], txt, attachments )
+                        login_success = self._handle_login(event) # creates a session
+                    if success:
+                        # determine intent
+                        resp = self.process_message(msg_txt)
+                        # handle intent
+                        txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
+                        # send message
+                        self.msg_writer.send_message( event['channel'], txt, attachments )
+                    else:
+                        self.msg_writer.send_message( event['channel'],
+                                                      "Please enter login details like this:\n"
+                                                      "user: {username} pw: {password}")
 
     def process_message(self, msg_txt ):
         """
