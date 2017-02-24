@@ -109,3 +109,6 @@ ENV/
 # Block credentials upload
 bot/private_settings.*
 private_settings.*
+
+# Github Pages Website
+site/
