@@ -4,7 +4,5 @@
 @import "{{ site.theme }}";
 
 .page-header {
-    color: #fff;
-    text-align: center;
     background-color: #990000 !important;
 }
