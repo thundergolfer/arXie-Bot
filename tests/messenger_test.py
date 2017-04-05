@@ -24,3 +24,14 @@ class TestMessenger():
                             "\n> `<@mr. mockbot> attachment` - I'll demo a post with an attachment using the Web API. :paperclip:")
 
         mock_messenger.assert_called_with(1000, expected_message)
+
+    @patch('bot.messenger.Messenger')
+    def test_write_error(self, mockMessenger):
+        messenger = Messenger(self.MockClient())
+        with patch.object(messenger, 'send_message') as mock_messenger:
+            mock_ch_id = 1000
+            messenger.write_error(1000, "error message")
+
+        expected_message = ":face_with_head_bandage: my maker didn't handle this error very well:\n>```error message```"
+
+        mock_messenger.assert_called_with(1000, expected_message)
