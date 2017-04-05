@@ -4,8 +4,8 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-from site_scraping import papers_from_embedded_script
-from formatter import build_message, paper_snippet
+from bot.site_scraping import papers_from_embedded_script
+from bot.formatter import build_message, paper_snippet
 
 logger = logging.getLogger(__name__)
 
@@ -15,10 +15,6 @@ class ApiAiIntentHandler(object):
 
     def __init__(self, slack_clients):
         self.clients = slack_clients
-
-    def make_pdf_link( self, paper_id ):
-        """ Build the URL to link to a paper's PDF. """
-        return ASP_BaseURL + 'pdf/' + paper_id + '.pdf'
 
     def handle_intent(self, msg_txt, intent, session, parameters=None, context=None ):
         """
@@ -46,7 +42,7 @@ class ApiAiIntentHandler(object):
         attached_papers = []
         # For each paper
         for i in range(max(num_papers,len(papers))):
-            attached_papers.append(paper_snippet(papers[i])))
+            attached_papers.append(paper_snippet(papers[i]))
 
         attached_papers[-1]['footer'] = "> `<@" + bot_uid + "> show more papers` - to see more papers"
         # build the json message object
