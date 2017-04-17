@@ -1,4 +1,5 @@
 from bot.formatter import build_message, paper_snippet, make_pdf_link
+import json
 
 
 def test_build_message_markdown_false():
@@ -10,11 +11,11 @@ def test_build_message_markdown_false():
 def test_build_message_markdown_true():
     test_markdown = "## Heading \n\n * This is a bullet-point."
 
-    expected_msg = '{"text": "## Heading \\n\\n * This is a bullet-point.", "mrkdwn": true}'
+    expected_msg = {"text": "## Heading \n\n * This is a bullet-point.", "mrkdwn": True}
 
     msg = build_message(test_markdown, markdown=True)
 
-    assert expected_msg == msg
+    assert expected_msg == json.loads(msg)
 
 def test_make_pdf_link():
     paper_id = 12345
