@@ -5,7 +5,6 @@ from tests.support.arxiv_sanity import page_html
 
 class MockResponse():
     def __init__(self):
-        import pdb; pdb.set_trace()
         self.text = page_html
 
 @patch('bot.site_scraping.requests.get')
@@ -14,4 +13,6 @@ def test_papers_from_embedded_script(mock_get):
 
     papers = papers_from_embedded_script("http://www.arxiv-sanity.com/")
 
-    assert "sfmwef2" == papers
+    assert papers is not None
+    assert len(papers) is 200
+    assert papers[0]['title'] == 'Efficient Action Detection in Untrimmed Videos via Multi-Task Learning'
