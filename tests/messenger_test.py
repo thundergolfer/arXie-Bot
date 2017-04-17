@@ -2,8 +2,6 @@ from mock import patch
 
 from bot.messenger import Messenger
 
-def test_nothing():
-    assert 3 is 3
 
 class TestMessenger():
 
