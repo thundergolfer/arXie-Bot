@@ -88,7 +88,7 @@ class ApiAiIntentHandler(object):
         """ Return specified paper from within the set. """
         paperURL = ASP_BaseURL + "/" + str(pid)
         paper = papers_from_embedded_script(paperURL)[0] # only get first, rest are related papers
-        return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(p)])
+        return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(paper, 1)])
 
     def get_recommended(self, session):
         """ Get the papers recommended to the user based on their
@@ -132,7 +132,7 @@ class ApiAiIntentHandler(object):
         """
         Save the named paper, which adds that paper to the user's library. """
         toggleURL = ASP_BaseURL + "/libtoggle"
-        r = session.post(toggleURL, data = {'pid':p["pid"]})
+        r = session.post(toggleURL, data = {'pid': paper["pid"]})
         if r.status_code != 200:
             # TODO log error to user somewho
             raise Exception("Paper save failed!")

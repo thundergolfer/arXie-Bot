@@ -84,3 +84,41 @@ class TestApiAiIntentHandler():
         mock_build_msg.assert_called_with(text="*Your Most Recent*",
                                           markdown=False,
                                           parts=self.dummy_parts)
+
+    @patch('bot.intent_handler.papers_from_embedded_script', return_value=dummy_papers)
+    @patch('bot.intent_handler.build_message', return_value="whatever")
+    def test_get_paper(self, mock_build_msg, mock_papers_from):
+        mock_session = MockSession()
+        test_pid = 1000 # will be ignored
+        self.intent_handler.get_paper(None, test_pid)
+
+        mock_build_msg.assert_called_with(text="*Here's your paper*",
+                                          markdown=False,
+                                          parts=[self.dummy_parts[0]])
+
+    def test_get_recommended(self):
+        pass
+
+    def test_get_top_recent(self):
+        pass
+
+    def test_get_similar(self):
+        pass
+
+    @patch('bot.intent_handler.build_message', return_value="whatever")
+    def goto_website(self, mock_build_msg):
+        self.intent_handler.goto_website()
+
+        mock_build_msg.assert_called_with(text='http://www.arxiv-sanity.com/',
+                                          markdown=False,
+                                          parts=None)
+
+    @patch('bot.intent_handler.papers_from_embedded_script', return_value=dummy_papers)
+    @patch('tests.intent_handler_test.MockSession.post', return_value=MockRequest())
+    def save_paper(self):
+        mock_session = MockSession()
+        test_paper = {'pid': 1000}
+
+        self.intent_handler.save_paper(test_paper, mock_session)
+
+        mock_post.assert_called_with('http://www.arxiv-sanity.com/libtoggle', data = {'pid': 1000})
