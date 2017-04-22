@@ -54,7 +54,7 @@ class ApiAiIntentHandler(object):
         # on all of them.
         # https://github.com/karpathy/arxiv-sanity-preserver/blob/79b975764d78f10e1223bffe289005521bf1fd00/templates/main.html
         libraryURL = ASP_BaseURL + "/library"
-        papers = papers_from_embedded_script
+        papers = papers_from_embedded_script(libraryURL)
         toggleURL = ASP_BaseURL + "/libtoggle"
         for p in papers:
             # toggle off each paper from library
@@ -70,8 +70,8 @@ class ApiAiIntentHandler(object):
         libraryURL = ASP_BaseURL + "/library"
         papers = papers_from_embedded_script(libraryURL, session=session)
         attached_papers = []
-        for p in papers:
-            attached_papers.append(paper_snippet(p))
+        for i, p in enumerate(papers):
+            attached_papers.append(paper_snippet(p, i + 1))
         return build_message( text="*Your Library*", markdown=False, parts=attached_papers)
 
     def get_most_recent(self, user):
