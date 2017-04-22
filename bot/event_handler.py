@@ -49,7 +49,7 @@ class RtmEventHandler(object):
         # Log in message sender if they exist
         user, pw = get_user(event['user'])
         # Are the login details in the message?
-        user, pw = parse_login_details(event['text'])
+        user, pw = self.parse_login_details(event['text'])
         if user and pw:
             # then login
             status_code, session = self._login(user, pw)
@@ -57,7 +57,7 @@ class RtmEventHandler(object):
             return True
         return False
 
-    def parse_login_details( msg_text ):
+    def parse_login_details(self, msg_text ):
         msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
         tokens = msg_text.split(' ')
         # Check string format
