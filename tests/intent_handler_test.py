@@ -69,3 +69,18 @@ class TestApiAiIntentHandler():
         mock_build_msg.assert_called_with(text="*Your Library*",
                                           markdown=False,
                                           parts=self.dummy_parts)
+
+    @patch('bot.intent_handler.papers_from_embedded_script', return_value=dummy_papers)
+    @patch('bot.intent_handler.build_message', return_value="whatever")
+    def test_get_most_recent(self, mock_build_msg, mock_papers_from):
+        class MockUser():
+            def __init__(self):
+                self.session = MockSession()
+
+        mock_session = MockSession()
+
+        self.intent_handler.get_most_recent(MockUser())
+
+        mock_build_msg.assert_called_with(text="*Your Most Recent*",
+                                          markdown=False,
+                                          parts=self.dummy_parts)

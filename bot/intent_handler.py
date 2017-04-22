@@ -80,8 +80,8 @@ class ApiAiIntentHandler(object):
         """
         papers = papers_from_embedded_script(ASP_BaseURL+"/", user.session)
         attached_papers = []
-        for p in papers:
-            attached_papers.append(paper_snippet(p))
+        for i, p in enumerate(papers):
+            attached_papers.append(paper_snippet(p, i + 1))
         return build_message( text="*Your Most Recent*", markdown=False, parts=attached_papers)
 
     def get_paper(self, set, pid):
