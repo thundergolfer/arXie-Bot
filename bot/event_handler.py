@@ -48,8 +48,10 @@ class RtmEventHandler(object):
     def _handle_login(self, event):
         # Log in message sender if they exist
         user, pw = get_user(event['user'])
-        # Are the login details in the message?
-        user, pw = self.parse_login_details(event['text'])
+        if not user or not pw:
+            # Are the login details in the message?
+            user, pw = self.parse_login_details(event['text'])
+            
         if user and pw:
             # then login
             status_code, session = self._login(user, pw)
