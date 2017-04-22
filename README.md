@@ -2,7 +2,7 @@
   <img src='images/arXie_300.png'/>
 </p>
 
-# **arXie Slack Bot** [![Build Status](https://travis-ci.org/thundergolfer/arXie-Bot.svg?branch=master)](https://travis-ci.org/thundergolfer/arXie-Bot)
+# **arXie Slack Bot** [![Build Status](https://travis-ci.org/thundergolfer/arXie-Bot.svg?branch=master)](https://travis-ci.org/thundergolfer/arXie-Bot) [![Code Climate](https://codeclimate.com/github/thundergolfer/arXie-Bot/badges/gpa.svg)](https://codeclimate.com/github/thundergolfer/arXie-Bot)
 
 ### arXiv {pronounced *archive*}, arXie {pronounced... *archie*}
 
