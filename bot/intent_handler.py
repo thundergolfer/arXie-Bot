@@ -32,7 +32,7 @@ class ApiAiIntentHandler(object):
         return arXiv_msg, None
 
 
-    def search_arxiv(self, query, num_papers=5 ):
+    def search_arxiv(self, query, num_papers=5):
         """ Search arxiv papers by search string. """
         tokens = query.split(' ')
         searchEndpoint = 'search?q=' + '+'.join(tokens)
@@ -41,8 +41,8 @@ class ApiAiIntentHandler(object):
         bot_uid = self.clients.bot_user_id()
         attached_papers = []
         # For each paper
-        for i in range(max(num_papers,len(papers))):
-            attached_papers.append(paper_snippet(papers[i]))
+        for i in range(min(num_papers,len(papers))):
+            attached_papers.append(paper_snippet(papers[i], i + 1))
 
         attached_papers[-1]['footer'] = "> `<@" + bot_uid + "> show more papers` - to see more papers"
         # build the json message object
