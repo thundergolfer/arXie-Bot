@@ -7,7 +7,7 @@ import apiai
 
 import sqlite3
 import requests
-from site_scraping import papers_from_embedded_script
+from bot.site_scraping import papers_from_embedded_script
 
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
