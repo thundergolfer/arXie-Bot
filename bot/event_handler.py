@@ -7,7 +7,9 @@ import apiai
 
 import sqlite3
 import requests
+
 from bot.site_scraping import papers_from_embedded_script
+from bot.data import get_user
 
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
@@ -20,11 +22,10 @@ class RtmEventHandler(object):
         self.msg_writer = msg_writer
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN) # TODO make dependency injection instead
-        self.sessions = None
+        self.sessions = {}
         self.tasks = {} # For mult-message spanning tasks
 
     def handle(self, event):
-
         if 'type' in event:
             self._handle_by_type(event['type'], event)
 
@@ -47,19 +48,21 @@ class RtmEventHandler(object):
 
     def _handle_login(self, event):
         # Log in message sender if they exist
+        logging.info("Handling login.")
         user, pw = get_user(event['user'])
         if not user or not pw:
             # Are the login details in the message?
             user, pw = self.parse_login_details(event['text'])
-            
+
         if user and pw:
             # then login
             status_code, session = self._login(user, pw)
-            self.session[event['user']] = session # we're gonna keep needing this
+            self.sessions[event['user']] = session # we're gonna keep needing this
             return True
         return False
 
     def parse_login_details(self, msg_text ):
+        logging.info("Parsing login details because of this msg: {}".format(msg_text))
         msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
         tokens = msg_text.split(' ')
         # Check string format
@@ -70,6 +73,7 @@ class RtmEventHandler(object):
 
     def _login(self, user, pw):
         """ Login using named credentials and pass back the Session. """
+        logging.info("Logging in {} to www.arxiv-sanity.com".format(user))
         login_url = 'http://www.arxiv-sanity.com/login'
         s = requests.Session()
         s.headers.update({'Referer' : 'http://arxiv-sanity.com/'}) # TODO add more relevant headers
@@ -83,9 +87,8 @@ class RtmEventHandler(object):
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)
         if ('user' in event) and (not self.clients.is_message_from_me(event['user'])):
-
             msg_txt = event['text']
-            if self.clients.is_bot_mention(msg_txt):
+            if self.clients.is_bot_mention(msg_txt) or self._is_direct_message(event['channel']):
                 # e.g. user typed: "@arxie-bot tell me a joke!"
                 msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
                 if 'help' in msg_txt:
@@ -93,25 +96,27 @@ class RtmEventHandler(object):
                 elif 'attachment' in msg_txt:
                     self.msg_writer.demo_attachment(event['channel'])
                 else:
-                    if not self.sessions['user']:
-                        login_success = self._handle_login(event) # creates a session
-                    if success:
+                    import pdb; pdb.set_trace()
+                    if event['user'] in self.sessions or self._handle_login(event): # creates a session
                         # determine intent
                         resp = self.process_message(msg_txt)
                         # handle intent
+                        session = self.sessions[event['user']]
                         txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
                         # send message
                         self.msg_writer.send_message( event['channel'], txt, attachments )
                     else:
-                        self.msg_writer.send_message( event['channel'],
-                                                      "Please enter login details like this:\n"
-                                                      "user: {username} pw: {password}")
+                        self.msg_writer.send_message(event['channel'],
+                                                     "I don't have your details."
+                                                     "Please enter login details like this:\n"
+                                                     "user: {username} pw: {password}")
 
     def process_message(self, msg_txt ):
         """
         Process the message body through API AI's system to get the intent
         of the message and update the context if needed.
         """
+        logging.info("Processing message through API AI - msg: {}".format(msg_txt))
         request = self.api_ai.text_request()
         request.query = msg_txt
         # get json response as bytes and decode it into a string
@@ -121,3 +126,10 @@ class RtmEventHandler(object):
                  'intent' : resp['result']['metadata']['intentName'],
                  'parameters' : resp['result']['parameters']
                }
+
+    def _is_direct_message(self, channel):
+        """Check if channel is a direct message channel
+        Args:
+            channel (str): Channel in which a message was received
+        """
+        return channel.startswith('D')

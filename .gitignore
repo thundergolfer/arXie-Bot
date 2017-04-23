@@ -90,7 +90,7 @@ celerybeat-schedule
 # ignore compiled python
 *.pyc
 */*.pyc
-bot/__pycache__/event_handler.cpython-35.pyc
+bot/__pycache__/*
 
 # virtualenv
 .venv/

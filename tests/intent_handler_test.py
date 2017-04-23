@@ -37,7 +37,7 @@ class TestApiAiIntentHandler():
         test_intent = "not search"
         arXiv_msg, _ = self.intent_handler.handle_intent(test_txt, test_intent, None)
 
-        assert "NOT YET IMPLEMENTED" == arXiv_msg
+        assert "Intent 'not search' not yet implemented." == arXiv_msg
 
     @patch('bot.intent_handler.papers_from_embedded_script', return_value=dummy_papers)
     @patch('bot.intent_handler.build_message', return_value="whatever")

@@ -2,12 +2,10 @@ import json
 import os
 
 LOGIN_DB_FILENAME = "logins.json"
-LOGIN_DB = os.path.join(os.dirname(__file__), LOGIN_DB_FILENAME)
+LOGIN_DB = os.path.join(os.path.dirname(__file__), LOGIN_DB_FILENAME)
 
 def load_db():
-    db_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                               LOGIN_DB_FILENAME)
-    with open(db_filepath, 'r') as fp:
+    with open(LOGIN_DB, 'r') as fp:
         logins = json.load(fp)
 
     return logins

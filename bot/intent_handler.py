@@ -28,12 +28,13 @@ class ApiAiIntentHandler(object):
                 query = msg_txt[len('search '):]
             arXiv_msg = self.search_arxiv(query)
         else:
-            arXiv_msg = "NOT YET IMPLEMENTED"
+            arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
         return arXiv_msg, None
 
 
     def search_arxiv(self, query, num_papers=5):
         """ Search arxiv papers by search string. """
+        logging.info("Searching ArXiv for: {}".format(query))
         tokens = query.split(' ')
         searchEndpoint = 'search?q=' + '+'.join(tokens)
         searchURL = ASP_BaseURL + searchEndpoint
@@ -50,9 +51,7 @@ class ApiAiIntentHandler(object):
 
     def clear_library(self, session):
         """ Remove all saved paper's from the users library. """
-        # The way to do this is to fetch all papers and then call "toggle"
-        # on all of them.
-        # https://github.com/karpathy/arxiv-sanity-preserver/blob/79b975764d78f10e1223bffe289005521bf1fd00/templates/main.html
+        logging.info("Clearing ArXiv library.")
         libraryURL = ASP_BaseURL + "/library"
         papers = papers_from_embedded_script(libraryURL)
         toggleURL = ASP_BaseURL + "/libtoggle"
@@ -65,8 +64,7 @@ class ApiAiIntentHandler(object):
 
     def get_library(self, session):
         """ Get all papers saved by the user. Their 'library'. """
-        # TODO check if logged in?
-        # TODO NEED TO PASS SESSION!!!!!
+        logging.info("Getting ArXiv library.")
         libraryURL = ASP_BaseURL + "/library"
         papers = papers_from_embedded_script(libraryURL, session=session)
         attached_papers = []
@@ -78,6 +76,7 @@ class ApiAiIntentHandler(object):
         """ Get most recently published papers within the user's search
         domain.
         """
+        logging.info("Getting most recent ArXiv papers within user's domain.")
         papers = papers_from_embedded_script(ASP_BaseURL+"/", user.session)
         attached_papers = []
         for i, p in enumerate(papers):
@@ -86,6 +85,7 @@ class ApiAiIntentHandler(object):
 
     def get_paper(self, set, pid):
         """ Return specified paper from within the set. """
+        logging.info("Getting paper: {} from ArXiv.".format(pid))
         paperURL = ASP_BaseURL + "/" + str(pid)
         paper = papers_from_embedded_script(paperURL)[0] # only get first, rest are related papers
         return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(paper, 1)])
@@ -94,6 +94,7 @@ class ApiAiIntentHandler(object):
         """ Get the papers recommended to the user based on their
         saved papers and their search domain. """
         # TODO the /recommend endpoint has FILTERS
+        logging.info("Getting recommended ArXiv papers for user.")
         recommendedURL = ASP_BaseURL + "/recommend"
         papers = papers_from_embedded_script(recommendedURL, session)
         attached_papers = []
@@ -106,6 +107,7 @@ class ApiAiIntentHandler(object):
         Get the 'top' recent papers within the user's search domain.
         """
         # TODO the /top endpoint has FILTERS
+        logging.info("Getting top recent ArXiv papers in user's domain.")
         topURL = ASP_BaseURL + "/top" # default filters
         papers = papers_from_embedded_script(topURL, session=session)
         attached_papers = []
@@ -115,6 +117,7 @@ class ApiAiIntentHandler(object):
 
     def get_similar( self, paper ):
         """ Get papers similar in content to the named paper. """
+        logging.info("Getting ArXiv papers similar to paper: {}".format())
         similarURL = ASP_BaseURL + str(paper.pid)
         similar_papers = papers_from_embedded_script(similarURL)[1:] # TODO is the searched paper always first?
         attached_papers = []
@@ -130,7 +133,8 @@ class ApiAiIntentHandler(object):
 
     def save_paper(self, paper, session):
         """
-        Save the named paper, which adds that paper to the user's library. """
+        Save the named paper, which adds that paper to the user's library."""
+        logging.info("Saving paper: {} to user's library.".format(paper))
         toggleURL = ASP_BaseURL + "/libtoggle"
         r = session.post(toggleURL, data = {'pid': paper["pid"]})
         if r.status_code != 200:
