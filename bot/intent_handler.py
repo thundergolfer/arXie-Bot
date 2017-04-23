@@ -27,10 +27,32 @@ class ApiAiIntentHandler(object):
             else: # message was just "search X"
                 query = msg_txt[len('search '):]
             arXiv_msg = self.search_arxiv(query)
+        elif intent == 'clear_library':
+            arXiv_msg = self.clear_library(session)
+        elif intent == 'get_library':
+            arXiv_msg = self.get_library(session)
+        elif intent == 'get_most_recent':
+            arXiv_msg = self.get_most_recent(session)
+        elif intent == 'get_paper':
+            arXiv_msg = self.get_paper(None, 99)
+        elif intent == 'get_recommended':
+            arXiv_msg = self.get_recommended(session)
+        elif intent == 'get_similar_papers':
+            arXiv_msg = self.get_similar(99)
+        elif intent == 'get_top_recent':
+            arXiv_msg = self.get_top_recent(session)
+        elif intent == 'goto_website':
+            arXiv_msg = self.goto_website()
+        elif intent == 'save_paper':
+            arXiv_msg = self.save_paper(999, session)
+        elif intent == 'send_credentials':
+            arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
         else:
             arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
         return arXiv_msg, None
 
+    def greeting(self):
+        return build_message(text="How are ya?", markdown=False, parts=None)
 
     def search_arxiv(self, query, num_papers=5):
         """ Search arxiv papers by search string. """
@@ -72,12 +94,12 @@ class ApiAiIntentHandler(object):
             attached_papers.append(paper_snippet(p, i + 1))
         return build_message( text="*Your Library*", markdown=False, parts=attached_papers)
 
-    def get_most_recent(self, user):
+    def get_most_recent(self, session):
         """ Get most recently published papers within the user's search
         domain.
         """
         logging.info("Getting most recent ArXiv papers within user's domain.")
-        papers = papers_from_embedded_script(ASP_BaseURL+"/", user.session)
+        papers = papers_from_embedded_script(ASP_BaseURL+"/", session)
         attached_papers = []
         for i, p in enumerate(papers):
             attached_papers.append(paper_snippet(p, i + 1))
@@ -115,15 +137,15 @@ class ApiAiIntentHandler(object):
             attached_papers.append(paper_snippet(p))
         return build_message( text="*Your Library*", markdown=False, parts=attached_papers)
 
-    def get_similar( self, paper ):
+    def get_similar(self, pid):
         """ Get papers similar in content to the named paper. """
         logging.info("Getting ArXiv papers similar to paper: {}".format())
-        similarURL = ASP_BaseURL + str(paper.pid)
+        similarURL = ASP_BaseURL + str(pid)
         similar_papers = papers_from_embedded_script(similarURL)[1:] # TODO is the searched paper always first?
         attached_papers = []
         for p in similar_papers:
             attached_papers.append(paper_snippet(p))
-        return build_message( text="*Your Library*", markdown=False, parts=attached_papers)
+        return build_message(text="*Your Library*", markdown=False, parts=attached_papers)
 
     def goto_website(self):
         """
