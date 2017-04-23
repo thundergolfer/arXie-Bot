@@ -65,7 +65,7 @@ Supply a query and search against the papers in *arxiv-sanity.com*.
 
 #### Installation
 
-You can use `virtualenv arxie-env` to create a virtual environment called "arxie-ev". Running `pip install -r requirements.txt`.
+You can use `virtualenv arxie-env` to create a virtual environment called "arxie-env". Running `pip install -r requirements.txt`.
 
 You will require an [*API AI*](https://api.ai/) token and a *Slack API Token* for the ArXie-Bot, which is accessible once the bot has been adding to your team ([details here for Slack](https://api.slack.com/bot-users)). Add these tokens as environment variables and the ArXie bot will pick them up.
 
