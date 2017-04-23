@@ -25,15 +25,49 @@ I've taken all feedback from that thread and the [hacker news thread](https://ne
 
 ## Set-Up
 
-*Coming soon...*
+`Coming soon once I've implemented what's neccessary for the "Add to Slack" button process`
 
 ## How To Basics
 
-*Coming soon...*
+The following commands are available to you:
 
-## Customising
+#### 1. Get Library
 
-*Coming soon...*
+The "Library" is those papers that are stored for your account at *arxiv-sanity.com*, and a summary will be presented by saying things like this:
+
+`@arxie-bot Get my library`, `@arxie-bot get library`, `@arxie-bot Fetch my library`, `@arxie-bot Get my papers library`
+
+#### 2. Get Paper
+
+Get a paper's summary:
+
+`@arxie-bot Show <paper title>`
+
+#### 3. Get Recommended
+
+Given papers you've saved, pull a few recent papers *arxiv-sanity.com* thinks you'd like.
+
+`@arxie-bot Get recommended papers`, `@arxie-bot I want my recommended papers`, `@arxie-bot recommended`
+
+#### 4. Clear Library
+
+The "Library" is those papers that are stored for you at *arxiv-sanity.com*, and they all be deleted by saying things like this:
+
+`@arxie-bot delete library`, `@arxie-bot delete all in library`, `@arxie-bot wipe library`, `@arxie-bot clear library`
+
+#### 5. Search
+
+Supply a query and search against the papers in *arxiv-sanity.com*.
+
+`@arxie-bot search for <search query>`, `@arxie-bot search <query>`
+
+## Development
+
+#### Installation
+
+You can use `virtualenv arxie-env` to create a virtual environment called "arxie-ev". Running `pip install -r requirements.txt`.
+
+You will require an [*API AI*](https://api.ai/) token and a *Slack API Token* for the ArXie-Bot, which is accessible once the bot has been adding to your team ([details here for Slack](https://api.slack.com/bot-users)). Add these tokens as environment variables and the ArXie bot will pick them up.
 
 ### License
 This project is under the [MIT License](https://opensource.org/licenses/MIT).
