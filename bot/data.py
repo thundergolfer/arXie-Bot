@@ -21,27 +21,32 @@ def create_db():
 def erase_db():
     with open(LOGIN_DB, 'w'): pass
 
-def update_with_user(slack_user, username, pw):
+def update_with_user(team, slack_user, username, pw):
     logins = load_db()
+    if team not in logins:
+        logins[team] = {}
     if slack_user not in logins:
-        logins[slack_user]['username'] = username
-        logins[slack_user]['password'] = pw
+        logins[team][slack_user] = {}
+        logins[team][slack_user]['username'] = username
+        logins[team][slack_user]['password'] = pw
         with open(LOGIN_DB, 'w') as fp:
             json.dump(logins, fp)
 
 
-def add_user(slack_user, username, pw):
+def add_user(team, slack_user, username, pw):
     logins = load_db()
-    logins[slack_user]['username'] = username
-    logins[slack_user]['password'] = pw
+    if team not in logins:
+        logins[team] = {}
+    logins[team][slack_user]['username'] = username
+    logins[team][slack_user]['password'] = pw
     with open(LOGIN_DB, 'w') as fp:
         json.dump(logins, fp)
 
-def get_user(slack_user):
+def get_user(team, slack_user):
     logins = load_db()
-    if slack_user in logins:
-        user = logins[slack_user]['username']
-        pw = logins[slack_user]['password']
+    if team in logins and slack_user in logins[team]:
+        user = logins[team][slack_user]['username']
+        pw = logins[team][slack_user]['password']
         return user, pw
 
     return None, None

@@ -5,10 +5,6 @@ import json
 import requests
 
 
-def paper_titles( soup ):
-    """ Extract paper titles from the ASP site's HTML. """
-    raise NotImplementedError
-
 def find_and_parse_papers_json(js):
     """
     This is a really ugly, dirty way to parse the 'papers' json object
@@ -32,9 +28,11 @@ def find_and_parse_papers_json(js):
 
     return papers
 
+
 def clean_json(json):
     json = json.replace('\n', ' ')
     return json.replace(r'\\', 'M@THJ@X')
+
 
 def papers_from_embedded_script( url, session=None ):
     """

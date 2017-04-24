@@ -49,7 +49,7 @@ class RtmEventHandler(object):
     def _handle_login(self, event):
         # Log in message sender if they exist
         logging.info("Handling login.")
-        user, pw = get_user(event['user'])
+        user, pw = get_user(event['team'], event['user'])
         if not user or not pw:
             # Are the login details in the message?
             user, pw = self.parse_login_details(event['text'])
@@ -57,12 +57,11 @@ class RtmEventHandler(object):
             # then login
             status_code, session = self._login(user, pw)
             self.sessions[event['user']] = session # we're gonna keep needing this
-            update_with_user(event['user'], user, pw)
+            update_with_user(event['team'], event['user'], user, pw)
 
             return True
 
         return False
-
 
     def parse_login_details(self, msg_text ):
         logging.info("Parsing login details because of this msg: {}".format(msg_text))
@@ -92,10 +91,10 @@ class RtmEventHandler(object):
         if 'user' not in event or self.clients.is_message_from_me(event['user']):
             return
 
+        msg_txt = event['text']
         if not self.clients.is_bot_mention(msg_txt) and not self._is_direct_message(event['channel']):
             return
 
-        msg_txt = event['text']
         # e.g. user typed: "@arxie-bot tell me a joke!"
         msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
         if 'help' in msg_txt:
@@ -128,7 +127,7 @@ class RtmEventHandler(object):
         # get json response as bytes and decode it into a string
         resp = request.getresponse().read().decode('utf-8')
         resp = json.loads(resp) # convert string to json dict
-        
+
         return { 'contexts' : resp['result']['contexts'] if 'contexts' in resp else None,
                  'intent' : resp['result']['metadata']['intentName'],
                  'parameters' : resp['result']['parameters']

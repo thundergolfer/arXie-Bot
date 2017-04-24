@@ -2,6 +2,7 @@ import json
 
 ASP_BaseURL = 'http://www.arxiv-sanity.com/'
 
+
 def build_message(text='Default Text', markdown=True, parts=None):
     """ Combine individual parts of a message into one formatted json message body. """
     if markdown:

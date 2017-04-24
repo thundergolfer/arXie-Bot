@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 ASP_BaseURL = 'http://www.arxiv-sanity.com/'
 
+
 class ApiAiIntentHandler(object):
 
     def __init__(self, slack_clients):
@@ -48,6 +49,7 @@ class ApiAiIntentHandler(object):
         elif intent == 'send_credentials':
             arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
         else:
+            logger.warning("Intent '{}' couldn't be matched to a handler function.".format(intent))
             arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
         return arXiv_msg, None
 

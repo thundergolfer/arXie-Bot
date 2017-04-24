@@ -1,6 +1,6 @@
 from mock import patch
 
-from bot.site_scraping import paper_titles, papers_from_embedded_script
+from bot.site_scraping import papers_from_embedded_script
 from tests.support.arxiv_sanity import page_html
 
 class MockResponse():
