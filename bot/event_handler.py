@@ -9,7 +9,7 @@ import sqlite3
 import requests
 
 from bot.site_scraping import papers_from_embedded_script
-from bot.data import get_user
+from bot.data import get_user, update_with_user
 
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
@@ -21,7 +21,7 @@ class RtmEventHandler(object):
         self.clients = slack_clients
         self.msg_writer = msg_writer
         self.intent_handler = intent_handler
-        self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN) # TODO make dependency injection instead
+        self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN)
         self.sessions = {}
         self.tasks = {} # For mult-message spanning tasks
 
@@ -53,13 +53,16 @@ class RtmEventHandler(object):
         if not user or not pw:
             # Are the login details in the message?
             user, pw = self.parse_login_details(event['text'])
-
         if user and pw:
             # then login
             status_code, session = self._login(user, pw)
             self.sessions[event['user']] = session # we're gonna keep needing this
+            update_with_user(event['user'], user, pw)
+
             return True
+
         return False
+
 
     def parse_login_details(self, msg_text ):
         logging.info("Parsing login details because of this msg: {}".format(msg_text))
@@ -86,29 +89,33 @@ class RtmEventHandler(object):
 
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)
-        if ('user' in event) and (not self.clients.is_message_from_me(event['user'])):
-            msg_txt = event['text']
-            if self.clients.is_bot_mention(msg_txt) or self._is_direct_message(event['channel']):
-                # e.g. user typed: "@arxie-bot tell me a joke!"
-                msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
-                if 'help' in msg_txt:
-                    self.msg_writer.write_help_message(event['channel'])
-                elif 'attachment' in msg_txt:
-                    self.msg_writer.demo_attachment(event['channel'])
-                else:
-                    if event['user'] in self.sessions or self._handle_login(event): # creates a session
-                        # determine intent
-                        resp = self.process_message(msg_txt)
-                        # handle intent
-                        session = self.sessions[event['user']]
-                        txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
-                        # send message
-                        self.msg_writer.send_message( event['channel'], txt, attachments )
-                    else:
-                        self.msg_writer.send_message(event['channel'],
-                                                     "I don't have your details."
-                                                     "Please enter login details like this:\n"
-                                                     "user: {username} pw: {password}")
+        if 'user' not in event or self.clients.is_message_from_me(event['user']):
+            return
+
+        if not self.clients.is_bot_mention(msg_txt) and not self._is_direct_message(event['channel']):
+            return
+
+        msg_txt = event['text']
+        # e.g. user typed: "@arxie-bot tell me a joke!"
+        msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
+        if 'help' in msg_txt:
+            self.msg_writer.write_help_message(event['channel'])
+        elif 'attachment' in msg_txt:
+            self.msg_writer.demo_attachment(event['channel'])
+        else:
+            if event['user'] in self.sessions or self._handle_login(event): # creates a session
+                # determine intent
+                resp = self.process_message(msg_txt)
+                # handle intent
+                session = self.sessions[event['user']]
+                txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
+                # send message
+                self.msg_writer.send_message( event['channel'], txt, attachments )
+            else:
+                self.msg_writer.send_message(event['channel'],
+                                             "I don't have your details."
+                                             "Please enter login details like this:\n"
+                                             "user: {username} pw: {password}")
 
     def process_message(self, msg_txt ):
         """
@@ -121,6 +128,7 @@ class RtmEventHandler(object):
         # get json response as bytes and decode it into a string
         resp = request.getresponse().read().decode('utf-8')
         resp = json.loads(resp) # convert string to json dict
+        
         return { 'contexts' : resp['result']['contexts'] if 'contexts' in resp else None,
                  'intent' : resp['result']['metadata']['intentName'],
                  'parameters' : resp['result']['parameters']

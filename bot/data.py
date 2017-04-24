@@ -5,8 +5,12 @@ LOGIN_DB_FILENAME = "logins.json"
 LOGIN_DB = os.path.join(os.path.dirname(__file__), LOGIN_DB_FILENAME)
 
 def load_db():
-    with open(LOGIN_DB, 'r') as fp:
-        logins = json.load(fp)
+    logins = {}
+    try:
+        with open(LOGIN_DB, 'r') as fp:
+            logins = json.load(fp)
+    except IOError:
+        create_db()
 
     return logins
 
@@ -16,6 +20,15 @@ def create_db():
 
 def erase_db():
     with open(LOGIN_DB, 'w'): pass
+
+def update_with_user(slack_user, username, pw):
+    logins = load_db()
+    if slack_user not in logins:
+        logins[slack_user]['username'] = username
+        logins[slack_user]['password'] = pw
+        with open(LOGIN_DB, 'w') as fp:
+            json.dump(logins, fp)
+
 
 def add_user(slack_user, username, pw):
     logins = load_db()
