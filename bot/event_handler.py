@@ -96,7 +96,6 @@ class RtmEventHandler(object):
                 elif 'attachment' in msg_txt:
                     self.msg_writer.demo_attachment(event['channel'])
                 else:
-                    import pdb; pdb.set_trace()
                     if event['user'] in self.sessions or self._handle_login(event): # creates a session
                         # determine intent
                         resp = self.process_message(msg_txt)

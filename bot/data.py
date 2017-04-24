@@ -11,13 +11,18 @@ def load_db():
     return logins
 
 def create_db():
-    raise NotImplementedError
+    with open(LOGIN_DB, 'w') as fp:
+        json.dump({}, fp)
 
 def erase_db():
-    raise NotImplementedError
+    with open(LOGIN_DB, 'w'): pass
 
-def add_user(user, pw):
-    raise NotImplementedError
+def add_user(slack_user, username, pw):
+    logins = load_db()
+    logins[slack_user]['username'] = username
+    logins[slack_user]['password'] = pw
+    with open(LOGIN_DB, 'w') as fp:
+        json.dump(logins, fp)
 
 def get_user(slack_user):
     logins = load_db()
@@ -29,4 +34,7 @@ def get_user(slack_user):
     return None, None
 
 def delete_user(slack_user):
-    raise NotImplementedError
+    logins = load_db()
+    del logins[slack_user]
+    with open(LOGIN_DB, 'w') as fp:
+        json.dump(logins, fp)
