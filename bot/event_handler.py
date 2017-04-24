@@ -23,7 +23,8 @@ class RtmEventHandler(object):
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN)
         self.sessions = {}
-        self.tasks = {} # For mult-message spanning tasks
+        self.tasks = [] # For mult-message spanning tasks
+        self.local_intent = None
 
     def handle(self, event):
         if 'type' in event:
@@ -57,6 +58,7 @@ class RtmEventHandler(object):
             # then login
             status_code, session = self._login(user, pw)
             self.sessions[event['user']] = session # we're gonna keep needing this
+            self.local_intent = 'GAVE LOGIN DETAILS'
             update_with_user(event['team'], event['user'], user, pw)
 
             return True
@@ -104,12 +106,16 @@ class RtmEventHandler(object):
         else:
             if event['user'] in self.sessions or self._handle_login(event): # creates a session
                 # determine intent
-                resp = self.process_message(msg_txt)
+                if self.local_intent:
+                    intent = self.local_intent
+                else:
+                    resp = self.process_message(msg_txt)
+                    intent = resp['intent']
                 # handle intent
                 session = self.sessions[event['user']]
-                txt, attachments = self.intent_handler.handle_intent( msg_txt, resp['intent'], session )
+                txt, attachments = self.intent_handler.handle_intent(msg_txt, intent, session)
                 # send message
-                self.msg_writer.send_message( event['channel'], txt, attachments )
+                self.msg_writer.send_message(event['channel'], txt, attachments)
             else:
                 self.msg_writer.send_message(event['channel'],
                                              "I don't have your details."

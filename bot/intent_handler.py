@@ -27,31 +27,33 @@ class ApiAiIntentHandler(object):
                 query = msg_txt[len('search for '):]
             else: # message was just "search X"
                 query = msg_txt[len('search '):]
-            arXiv_msg = self.search_arxiv(query)
+            resp_msg = self.search_arxiv(query)
         elif intent == 'clear_library':
-            arXiv_msg = self.clear_library(session)
+            resp_msg = self.clear_library(session)
         elif intent == 'get_library':
-            arXiv_msg = self.get_library(session)
+            resp_msg = self.get_library(session)
         elif intent == 'get_most_recent':
-            arXiv_msg = self.get_most_recent(session)
+            resp_msg = self.get_most_recent(session)
         elif intent == 'get_paper':
-            arXiv_msg = self.get_paper(None, 99)
+            resp_msg = self.get_paper(None, 99)
         elif intent == 'get_recommended':
-            arXiv_msg = self.get_recommended(session)
+            resp_msg = self.get_recommended(session)
         elif intent == 'get_similar_papers':
-            arXiv_msg = self.get_similar(99)
+            resp_msg = self.get_similar(99)
         elif intent == 'get_top_recent':
-            arXiv_msg = self.get_top_recent(session)
+            resp_msg = self.get_top_recent(session)
         elif intent == 'goto_website':
-            arXiv_msg = self.goto_website()
+            resp_msg = self.goto_website()
         elif intent == 'save_paper':
-            arXiv_msg = self.save_paper(999, session)
+            resp_msg = self.save_paper(999, session)
         elif intent == 'send_credentials':
-            arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
+            resp_msg = "Intent '{}' not yet implemented.".format(intent)
+        elif intent == 'GAVE LOGIN DETAILS':
+            resp_msg = build_message(text="Thanks for that. I've saved your details.", markdown=False, parts=None)
         else:
             logger.warning("Intent '{}' couldn't be matched to a handler function.".format(intent))
-            arXiv_msg = "Intent '{}' not yet implemented.".format(intent)
-        return arXiv_msg, None
+            resp_msg = "Intent '{}' not yet implemented.".format(intent)
+        return resp_msg, None
 
     def greeting(self):
         return build_message(text="How are ya?", markdown=False, parts=None)
