@@ -54,11 +54,11 @@ class RtmEventHandler(object):
         if not user or not pw:
             # Are the login details in the message?
             user, pw = self.parse_login_details(event['text'])
+            self.local_intent = 'GAVE LOGIN DETAILS'
         if user and pw:
             # then login
             status_code, session = self._login(user, pw)
             self.sessions[event['user']] = session # we're gonna keep needing this
-            self.local_intent = 'GAVE LOGIN DETAILS'
             update_with_user(event['team'], event['user'], user, pw)
 
             return True
@@ -108,6 +108,7 @@ class RtmEventHandler(object):
                 # determine intent
                 if self.local_intent:
                     intent = self.local_intent
+                    self.local_intent = None
                 else:
                     resp = self.process_message(msg_txt)
                     intent = resp['intent']

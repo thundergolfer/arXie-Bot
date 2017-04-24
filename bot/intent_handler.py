@@ -1,4 +1,5 @@
 import json
+import random
 import logging
 import re
 from bs4 import BeautifulSoup
@@ -28,6 +29,8 @@ class ApiAiIntentHandler(object):
             else: # message was just "search X"
                 query = msg_txt[len('search '):]
             resp_msg = self.search_arxiv(query)
+        elif intent == 'greeting':
+            resp_msg = self.say_hello(session)
         elif intent == 'clear_library':
             resp_msg = self.clear_library(session)
         elif intent == 'get_library':
@@ -56,7 +59,13 @@ class ApiAiIntentHandler(object):
         return resp_msg, None
 
     def greeting(self):
-        return build_message(text="How are ya?", markdown=False, parts=None)
+        greetings = [
+            'How are ya?',
+            'Good to hear from you',
+            'Hey', 'Hello', 'Hi',
+            'Good day!'
+        ]
+        return build_message(text=random.choice(greetings), markdown=False, parts=None)
 
     def search_arxiv(self, query, num_papers=5):
         """ Search arxiv papers by search string. """
