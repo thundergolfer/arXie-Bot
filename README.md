@@ -90,3 +90,8 @@ You will require an [*API AI*](https://api.ai/) token and a *Slack API Token* fo
 
 ### License
 This project is under the [MIT License](https://opensource.org/licenses/MIT).
+
+------
+### Made With
+
+![Imgur](http://i.imgur.com/Fd6Kk9T.png) ![Imgur](http://i.imgur.com/rikiMi0.jpg) ![Imgur](http://i.imgur.com/BwhBHyx.jpg) ![Imgur](http://i.imgur.com/k289uw5.jpg)
