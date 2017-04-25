@@ -9,7 +9,7 @@ import sqlite3
 import requests
 
 from bot.site_scraping import papers_from_embedded_script
-from bot.data import get_user, update_with_user
+from bot.accounts import get_user, update_with_user
 
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
@@ -65,18 +65,6 @@ class RtmEventHandler(object):
 
         return False
 
-    def parse_login_details(self, event):
-        msg_text = event['text']
-        logging.info("Parsing login details because of this msg: {}".format(msg_text))
-        msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
-        tokens = msg_text.split(' ')
-        # Check string format
-        if len(tokens) == 4 and tokens[0] == 'user:' and tokens[2] == 'pw:':
-            return tokens[1], tokens[3]
-        else:
-            self.msg_writer.send_message(event['channel'], "Sorry, that's not the right message format.")
-            return None, None
-
     def _login(self, user, pw):
         """ Login using named credentials and pass back the Session. """
         logging.info("Logging in {} to www.arxiv-sanity.com".format(user))
@@ -89,6 +77,18 @@ class RtmEventHandler(object):
         }
         p = s.post(login_url, data=payload)
         return p.status_code, s
+
+    def parse_login_details(self, event):
+        msg_text = event['text']
+        logging.info("Parsing login details because of this msg: {}".format(msg_text))
+        msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
+        tokens = msg_text.split(' ')
+        # Check string format
+        if len(tokens) == 4 and tokens[0] == 'user:' and tokens[2] == 'pw:':
+            return tokens[1], tokens[3]
+        else:
+            self.msg_writer.send_message(event['channel'], "Sorry, that's not the right message format.")
+            return None, None
 
     def _handle_message(self, event):
         # Filter out messages from the bot itself, and from non-users (eg. webhooks)

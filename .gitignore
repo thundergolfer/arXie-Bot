@@ -96,6 +96,7 @@ bot/__pycache__/*
 .venv/
 venv/
 ENV/
+deactivate/
 
 # Spyder project settings
 .spyderproject
