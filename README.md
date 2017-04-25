@@ -25,7 +25,26 @@ I've taken all feedback from that thread and the [hacker news thread](https://ne
 
 ## Set-Up
 
-`Coming soon once I've implemented what's neccessary for the "Add to Slack" button process`
+#### **Disclaimer:**
+```
+ArXie-Bot uses arxiv-sanity.com as an interface to the ArXiv papers repository.
+As arxiv-sanity has a _username_, _password_ login system, Arxie-Bot is required
+to either receive some existing login details from you, or ask you
+to message it some fresh ones to use.
+
+As you have probably figured, this requires messaging through Slack a password,
+which is god-awful security. Though an arxiv-sanity.com account is a pretty low 
+value target, it is still something that needs to be fixed.
+
+The first step will probably involve moving to a process whereby Arxie-Bot
+creates an password for you on the back-end and emails you that password to a
+secure email so that you may use the arxiv-sanity.com account outside of Slack.
+
+It will be harder to facilitate the secure  passing of an existing password to
+the bot, but that is a desired feature.
+```
+
+`Coming soon once I've implemented what's necessary for the "Add to Slack" button process`
 
 ## How To Basics
 
