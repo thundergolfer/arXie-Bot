@@ -82,8 +82,8 @@ class RtmEventHandler(object):
         s = requests.Session()
         s.headers.update({'Referer' : 'http://arxiv-sanity.com/'}) # TODO add more relevant headers
         payload = {
-            'username' : 'thundergolfer',
-            'password' : 'mnijb233'
+            'username' : user,
+            'password' : pw
         }
         p = s.post(login_url, data=payload)
         return p.status_code, s
