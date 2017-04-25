@@ -53,7 +53,7 @@ class RtmEventHandler(object):
         user, pw = get_user(event['team'], event['user'])
         if not user or not pw:
             # Are the login details in the message?
-            user, pw = self.parse_login_details(event['text'])
+            user, pw = self.parse_login_details(event)
             self.local_intent = 'GAVE LOGIN DETAILS'
         if user and pw:
             # then login
@@ -65,7 +65,8 @@ class RtmEventHandler(object):
 
         return False
 
-    def parse_login_details(self, msg_text ):
+    def parse_login_details(self, event):
+        msg_text = event['text']
         logging.info("Parsing login details because of this msg: {}".format(msg_text))
         msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
         tokens = msg_text.split(' ')
@@ -73,6 +74,7 @@ class RtmEventHandler(object):
         if len(tokens) == 4 and tokens[0] == 'user:' and tokens[2] == 'pw:':
             return tokens[1], tokens[3]
         else:
+            self.msg_writer.send_message(event['channel'], "Sorry, that's not the right message format.")
             return None, None
 
     def _login(self, user, pw):

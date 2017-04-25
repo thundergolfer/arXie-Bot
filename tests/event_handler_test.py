@@ -1,3 +1,5 @@
+from mock import patch
+
 from bot.event_handler import RtmEventHandler
 
 
@@ -7,7 +9,8 @@ class MockClient():
 
 
 class MockWriter():
-    pass
+    def send_message(self, channel, message):
+        return True
 
 
 class MockIntentHandler():
@@ -22,13 +25,21 @@ class TestRtmEventHandler():
                                          MockIntentHandler())
 
     def test_parse_login_details(self):
-        test_msg = "<@arXie-bot> user: username pw: password"
-        user, pw = self.e_handler.parse_login_details(test_msg)
+        event = {
+            "text": "<@arXie-bot> user: username pw: password",
+            "channel": 10349234
+        }
+        user, pw = self.e_handler.parse_login_details(event)
 
         assert user == "username" and pw == "password"
 
-    def test_parse_login_details_fail(self):
-        test_msg = "<@arXie-bot> user: thisistheuser password: blah"
-        user, pw = self.e_handler.parse_login_details(test_msg)
+    @patch('tests.event_handler_test.MockWriter.send_message')
+    def test_parse_login_details_fail(self, mock_send_message):
+        event = {
+            "text": "<@arXie-bot> user: thisistheuser password: blah",
+            "channel": 12382443
+        }
+        user, pw = self.e_handler.parse_login_details(event)
 
         assert user is None and pw is None
+        mock_send_message.assert_called_with(event['channel'], "Sorry, that's not the right message format.")

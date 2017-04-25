@@ -112,3 +112,6 @@ private_settings.*
 
 # Github Pages Website
 site/
+
+# Login Details file
+*/logins.json
