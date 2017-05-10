@@ -29,7 +29,7 @@ class ApiAiIntentHandler(object):
             else: # message was just "search X"
                 query = msg_txt[len('search '):]
             resp_msg = self.search_arxiv(query)
-        elif intent == 'greeting':
+        elif intent == 'greeting' or intent == 'say_hello':
             resp_msg = self.say_hello(session)
         elif intent == 'clear_library':
             resp_msg = self.clear_library(session)
