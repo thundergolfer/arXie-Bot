@@ -69,7 +69,7 @@ class ApiAiIntentHandler(object):
 
     def search_arxiv(self, query, num_papers=5):
         """ Search arxiv papers by search string. """
-        logging.info("Searching ArXiv for: {}".format(query))
+        logging.info("Searching ArXiv for: {}".format(query.encode('utf-8')))
         tokens = query.split(' ')
         searchEndpoint = 'search?q=' + '+'.join(tokens)
         searchURL = ASP_BaseURL + searchEndpoint
