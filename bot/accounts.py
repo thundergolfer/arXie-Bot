@@ -22,7 +22,7 @@ def create_db():
         json.dump({}, fp)
 
 def erase_db():
-    with open(LOGIN_DB, 'w'): pass
+    create_db()
 
 def update_with_user(team, slack_user, username, pw):
     logins = load_db()
