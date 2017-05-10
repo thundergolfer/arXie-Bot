@@ -22,13 +22,15 @@ class ApiAiIntentHandler(object):
         """
         Receive an intent string and select the correct intent handling function.
         """
+        attachments = None
         if intent == 'search':
             # Strip front of message to just retain search query
             if msg_txt.startswith('search for '):
                 query = msg_txt[len('search for '):]
             else: # message was just "search X"
                 query = msg_txt[len('search '):]
-            resp_msg = self.search_arxiv(query)
+
+            resp_msg, attachments = self.search_arxiv(query)
         elif intent == 'greeting' or intent == 'say_hello':
             resp_msg = self.greeting()
         elif intent == 'clear_library':
@@ -56,7 +58,8 @@ class ApiAiIntentHandler(object):
         else:
             logger.warning("Intent '{}' couldn't be matched to a handler function.".format(intent))
             resp_msg = "Intent '{}' not yet implemented.".format(intent)
-        return resp_msg, None
+
+        return resp_msg, attachments
 
     def greeting(self):
         greetings = [
@@ -82,7 +85,8 @@ class ApiAiIntentHandler(object):
 
         attached_papers[-1]['footer'] = "> `<@" + bot_uid + "> show more papers` - to see more papers"
         # build the json message object
-        return build_message( text="*Search Results*", markdown=False, parts=attached_papers)
+
+        return build_message( text="*Search Results*", markdown=False, parts=attached_papers), attached_papers
 
     def clear_library(self, session):
         """ Remove all saved paper's from the users library. """
@@ -152,7 +156,7 @@ class ApiAiIntentHandler(object):
 
     def get_similar(self, pid):
         """ Get papers similar in content to the named paper. """
-        logging.info("Getting ArXiv papers similar to paper: {}".format())
+        logging.info("Getting ArXiv papers similar to paper: {}".format(pid))
         similarURL = ASP_BaseURL + str(pid)
         similar_papers = papers_from_embedded_script(similarURL)[1:] # TODO is the searched paper always first?
         attached_papers = []
