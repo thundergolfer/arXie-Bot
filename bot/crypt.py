@@ -1,6 +1,9 @@
 import struct
 from Crypto.Cipher import AES
-from bot.private_settings import db_token
+try:
+    from bot.private_settings import db_token
+except ImportError:
+    db_token = "FAKE_TOKEN"
 
 
 def pad16(s):
