@@ -25,13 +25,15 @@ class TestApiAiIntentHandler():
         for i in range(len(dummy_papers)):
             self.dummy_parts.append(paper_snippet(dummy_papers[i], i + 1))
 
-    @patch('bot.intent_handler.ApiAiIntentHandler.search_arxiv', return_value="Here's your answer")
+    @patch('bot.intent_handler.ApiAiIntentHandler.search_arxiv', return_value=("Here's your answer", ["attach", "ments"]))
     def test_handle_intent(self, mock_handler):
         test_txt = "search for SOMETHING"
         test_intent = "search"
-        arXiv_msg, _ = self.intent_handler.handle_intent(test_txt, test_intent, None)
+
+        arXiv_msg, attachments = self.intent_handler.handle_intent(test_txt, test_intent, None)
 
         assert "Here's your answer" == arXiv_msg
+        assert ["attach", "ments"] == attachments
 
         test_txt = "let's do something else"
         test_intent = "not search"
