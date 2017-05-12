@@ -6,9 +6,9 @@ except ImportError:
     db_token = "FAKE_TOKEN"
 
 
-def pad16(s):
-    t = struct.pack('>I', len(s)) + s
-    return t + '\x00' * ((16 - len(t) % 16) % 16)
+def pad16(ss):
+    t = struct.pack('>I', len(ss)) + ss.encode('utf-8')
+    return t + b'\x00' * ((16 - len(t) % 16) % 16)
 
 
 def unpad16(s):
@@ -19,7 +19,6 @@ def unpad16(s):
 class Crypt(object):
     def __init__(self, password):
         password = pad16(password)
-        print(len(password.encode('utf-8')))
         self.cipher = AES.new(password, AES.MODE_ECB)
 
     def encrypt(self, s):
@@ -37,5 +36,8 @@ def encrypt(s, p=db_token):
 
 
 def decrypt(s, p=db_token):
-    c = Crypt(p)
-    return c.decrypt(s)
+    crypt = Crypt(p)
+    try:
+        return crypt.decrypt(s).decode('utf-8')
+    except UnicodeDecodeError:
+        return ""

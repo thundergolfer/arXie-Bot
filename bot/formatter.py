@@ -26,7 +26,7 @@ def paper_snippet( paper, number, include_abstract=False ):
     entry += '<{}|{}>\n'.format( paper['link'],
                                  str(number) + '. ' + paper['title'].replace('\n',' '))
     # make authors and date line
-    entry += '{} - {}\n'.format(', '.join(paper['authors']).encode('utf-8'),
+    entry += '{} - {}\n'.format(', '.join(paper['authors']),
                                 paper['originally_published_time']) # authors are in bold
 
     if include_abstract:

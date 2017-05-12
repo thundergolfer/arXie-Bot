@@ -31,7 +31,7 @@ def update_with_user(team, slack_user, username, pw):
     if slack_user not in logins[team]:
         logins[team][slack_user] = {}
         logins[team][slack_user]['username'] = username
-        logins[team][slack_user]['password'] = base64.encodestring(encrypt(pw))
+        logins[team][slack_user]['password'] = base64.encodestring(encrypt(pw)).decode('utf-8')
         with open(LOGIN_DB, 'w') as fp:
             json.dump(logins, fp)
 
@@ -49,7 +49,9 @@ def get_user(team, slack_user):
     logins = load_db()
     if team in logins and slack_user in logins[team]:
         user = logins[team][slack_user]['username']
-        pw = decrypt(base64.decodestring(logins[team][slack_user]['password']))
+        encrypted_pw = logins[team][slack_user]['password'].encode('utf-8')
+        pw = decrypt(base64.decodestring(encrypted_pw))
+
         return user, pw
 
     return None, None

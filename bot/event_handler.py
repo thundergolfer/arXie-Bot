@@ -130,7 +130,7 @@ class RtmEventHandler(object):
         Process the message body through API AI's system to get the intent
         of the message and update the context if needed.
         """
-        logging.info("Processing message through API AI - msg: {}".format(msg_txt.encode('utf-8')))
+        logging.info("Processing message through API AI - msg: {}".format(msg_txt))
         request = self.api_ai.text_request()
         request.query = msg_txt
         # get json response as bytes and decode it into a string

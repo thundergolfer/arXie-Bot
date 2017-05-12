@@ -41,7 +41,7 @@ def test_create_db(mock_dump):
     mock_dump.assert_called_once_with({}, ANY)
 
 
-@patch("__builtin__.open")
+@patch("builtins.open")
 def test_erase_db(mock_open):
     erase_db()
     mock_open.assert_called_once_with(LOGIN_DB, 'w')
@@ -53,7 +53,7 @@ def test_update_with_user_new_user_new_team(mock_load_db, mock_json):
     update_with_user("NEWTEAM", "newuser", "NEWUSERNAME", "NEWPASSWORD")
     new_logins = copy.deepcopy(MOCK_LOGINS)
     new_logins["NEWTEAM"] = {"newuser": {"username": "NEWUSERNAME",
-                                         "password": base64.encodestring(encrypt("NEWPASSWORD"))}}
+                                         "password": base64.encodestring(encrypt("NEWPASSWORD")).decode('utf-8')}}
 
     mock_json.assert_called_once_with(new_logins, ANY)
 
@@ -64,7 +64,7 @@ def test_update_with_user_new_user_existing_team(mock_load_db, mock_json):
     update_with_user("ONETEAM", "newuser", "NEWUSERNAME", "NEWPASSWORD")
     new_logins = copy.deepcopy(MOCK_LOGINS)
     new_logins["ONETEAM"]["newuser"] = {"username": "NEWUSERNAME",
-                                        "password": base64.encodestring(encrypt("NEWPASSWORD"))}
+                                        "password": base64.encodestring(encrypt("NEWPASSWORD")).decode('utf-8')}
 
     mock_json.assert_called_once_with(new_logins, ANY)
 
