@@ -19,7 +19,7 @@ def make_pdf_link(paper_id):
     return ASP_BaseURL + 'pdf/' + str(paper_id) + '.pdf'
 
 
-def paper_snippet( paper, number ):
+def paper_snippet( paper, number, include_abstract=False ):
     snippet = {}
     entry = ""
     # Make title line with link to article
@@ -28,6 +28,11 @@ def paper_snippet( paper, number ):
     # make authors and date line
     entry += '{} - {}\n'.format(', '.join(paper['authors']).encode('utf-8'),
                                 paper['originally_published_time']) # authors are in bold
+
+    if include_abstract:
+        entry += '-----------------------------\n'
+        entry += paper['abstract'] + '\n'
+        entry += '-----------------------------\n'
     # make PDF link line
     entry += '<{}|PDF>\n'.format(make_pdf_link(paper['pid']))
     snippet['text'] = entry
