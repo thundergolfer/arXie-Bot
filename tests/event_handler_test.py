@@ -42,4 +42,3 @@ class TestRtmEventHandler():
         user, pw = self.e_handler.parse_login_details(event)
 
         assert user is None and pw is None
-        mock_send_message.assert_called_with(event['channel'], "Sorry, that's not the right message format.")

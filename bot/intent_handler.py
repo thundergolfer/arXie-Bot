@@ -139,6 +139,7 @@ class ApiAiIntentHandler(object):
         """ Return specified paper from within the set. """
         if not self.previous_attachments:
             logging.info("Can't retreive paper. No papers in current context.")
+            return build_message(text="*Can't retreive paper*"), None
         else:
             pid = re.findall('[0-9]+\.?[0-9]*', self.previous_attachments[paper_id - 1]['text'])[0]
             logging.info("Getting paper: {} from ArXiv.".format(pid))

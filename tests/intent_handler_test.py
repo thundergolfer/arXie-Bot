@@ -92,11 +92,9 @@ class TestApiAiIntentHandler():
     def test_get_paper(self, mock_build_msg, mock_papers_from):
         mock_session = MockSession()
         test_pid = 1000 # will be ignored
-        self.intent_handler.get_paper(None, test_pid)
+        self.intent_handler.get_paper(test_pid)
 
-        mock_build_msg.assert_called_with(text="*Here's your paper*",
-                                          markdown=False,
-                                          parts=[self.dummy_parts[0]])
+        mock_build_msg.assert_called_with(text="*Can't retreive paper*")
 
     def test_get_recommended(self):
         pass
