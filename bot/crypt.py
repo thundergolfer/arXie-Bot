@@ -1,9 +1,8 @@
 import struct
+import os
 from Crypto.Cipher import AES
-try:
-    from bot.private_settings import db_token
-except ImportError:
-    db_token = "FAKE_TOKEN"
+
+db_token = os.environ['ARXIE_DB_TOKEN']
 
 
 def pad16(ss):

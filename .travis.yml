@@ -2,7 +2,7 @@ language: python
 python:
   - "3.5"
 env:
-  - APIAI_TOKEN=thisisisntarealtoken
+  - APIAI_TOKEN=thisisisntarealtoken ARXIE_DB_TOKEN="apian cleft dogs cats t fuss"
 install:
   - pip install -r requirements.txt
 branches:

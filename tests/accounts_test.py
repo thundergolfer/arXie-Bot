@@ -1,6 +1,7 @@
 from mock import patch, ANY
 import base64
 import copy
+import pytest
 
 from bot.crypt import encrypt
 from bot.accounts import (LOGIN_DB,
@@ -22,8 +23,14 @@ MOCK_LOGINS = {
     }
 }
 
+@pytest.yield_fixture
+def refresh():
+  create_db()
+  yield
+  create_db()
+
 @patch('bot.accounts.json.load', return_value={"this": "was loaded"})
-def test_load_db(mock_load):
+def test_load_db(mock_load, refresh):
     assert load_db() == {"this": "was loaded"}
     mock_load.assert_called_once_with(ANY)
 
