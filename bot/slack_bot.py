@@ -2,10 +2,10 @@ import time
 import logging
 import traceback
 
-from slack_clients import SlackClients
-from messenger import Messenger
-from event_handler import RtmEventHandler
-from intent_handler import ApiAiIntentHandler
+from bot.slack_clients import SlackClients
+from bot.messenger import Messenger
+from bot.event_handler import RtmEventHandler
+from bot.intent_handler import ApiAiIntentHandler
 
 logger = logging.getLogger(__name__)
 

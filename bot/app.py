@@ -6,8 +6,8 @@ import os
 from beepboop import resourcer
 from beepboop import bot_manager
 
-from slack_bot import SlackBot
-from slack_bot import spawn_bot
+from bot.slack_bot import SlackBot
+from bot.slack_bot import spawn_bot
 
 logger = logging.getLogger(__name__)
 
