@@ -87,7 +87,7 @@ class RtmEventHandler(object):
         if len(tokens) == 4 and tokens[0] == 'user:' and tokens[2] == 'pw:':
             return tokens[1], tokens[3]
         else:
-            self.msg_writer.send_message(event['channel'], "Sorry, that's not the right message format.")
+            # self.msg_writer.send_message(event['channel'], "Sorry, that's not the right message format.")
             return None, None
 
     def _handle_message(self, event):
@@ -121,7 +121,7 @@ class RtmEventHandler(object):
                 self.msg_writer.send_message(event['channel'], txt, attachments)
             else:
                 self.msg_writer.send_message(event['channel'],
-                                             "I don't have your details."
+                                             "I don't have your details. "
                                              "Please enter login details like this:\n"
                                              "user: {username} pw: {password}")
 

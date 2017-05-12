@@ -17,6 +17,8 @@ class ApiAiIntentHandler(object):
 
     def __init__(self, slack_clients):
         self.clients = slack_clients
+        self.previous_msg = None
+        self.previous_attachments = None
 
     def handle_intent(self, msg_txt, intent, session, parameters=None, context=None ):
         """
@@ -40,7 +42,11 @@ class ApiAiIntentHandler(object):
         elif intent == 'get_most_recent':
             resp_msg, attachments = self.get_most_recent(session)
         elif intent == 'get_paper':
-            resp_msg = self.get_paper(None, 99)
+            try:
+                num_of_paper = [int(s) for s in msg_txt.split() if s.isdigit()][0]
+                resp_msg, attachments = self.get_paper(num_of_paper)
+            except KeyError:
+                resp_msg = "Please specify which paper you want by it's number in the given list."
         elif intent == 'get_recommended':
             resp_msg, attachments = self.get_recommended(session)
         elif intent == 'get_similar_papers':
@@ -59,6 +65,8 @@ class ApiAiIntentHandler(object):
             logger.warning("Intent '{}' couldn't be matched to a handler function.".format(intent))
             resp_msg = "Intent '{}' not yet implemented.".format(intent)
 
+        self.previous_msg = resp_msg
+        self.previous_attachments = attachments
         return resp_msg, attachments
 
     def greeting(self):
@@ -105,7 +113,11 @@ class ApiAiIntentHandler(object):
         """ Get all papers saved by the user. Their 'library'. """
         logging.info("Getting ArXiv library.")
         libraryURL = ASP_BaseURL + "/library"
-        papers = papers_from_embedded_script(libraryURL, session=session)
+        try:
+            papers = papers_from_embedded_script(libraryURL, session=session)
+        except ReadTimeout:
+            return build_message( text="*Connection Problem. Please try again*", markdown=False, parts=None)
+
         attached_papers = []
         for i, p in enumerate(papers):
             attached_papers.append(paper_snippet(p, i + 1))
@@ -123,12 +135,16 @@ class ApiAiIntentHandler(object):
 
         return build_message( text="*Your Most Recent*", markdown=False, parts=attached_papers), attached_papers[:5]
 
-    def get_paper(self, set, pid):
+    def get_paper(self, paper_id):
         """ Return specified paper from within the set. """
-        logging.info("Getting paper: {} from ArXiv.".format(pid))
+        if not self.previous_attachments:
+            logging.info("Can't retreive paper. No papers in current context.")
+        else:
+            pid = re.findall('[0-9]+\.?[0-9]*', self.previous_attachments[paper_id - 1]['text'])[0]
+            logging.info("Getting paper: {} from ArXiv.".format(pid))
         paperURL = ASP_BaseURL + "/" + str(pid)
         paper = papers_from_embedded_script(paperURL)[0] # only get first, rest are related papers
-        return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(paper, 1)])
+        return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(paper, 1)]), [paper_snippet(paper, 1)]
 
     def get_recommended(self, session):
         """ Get the papers recommended to the user based on their
