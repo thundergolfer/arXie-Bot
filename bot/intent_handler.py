@@ -144,7 +144,7 @@ class ApiAiIntentHandler(object):
             logging.info("Getting paper: {} from ArXiv.".format(pid))
         paperURL = ASP_BaseURL + "/" + str(pid)
         paper = papers_from_embedded_script(paperURL)[0] # only get first, rest are related papers
-        return build_message(text="*Here's your paper*", markdown=False, parts=[paper_snippet(paper, 1)]), [paper_snippet(paper, 1)]
+        return build_message(text="*Here's your paper*", markdown=False, parts=None), [paper_snippet(paper, 1, include_abstract=True)]
 
     def get_recommended(self, session):
         """ Get the papers recommended to the user based on their
