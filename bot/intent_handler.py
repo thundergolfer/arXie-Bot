@@ -36,13 +36,13 @@ class ApiAiIntentHandler(object):
         elif intent == 'clear_library':
             resp_msg = self.clear_library(session)
         elif intent == 'get_library':
-            resp_msg = self.get_library(session)
+            resp_msg, attachments = self.get_library(session)
         elif intent == 'get_most_recent':
-            resp_msg = self.get_most_recent(session)
+            resp_msg, attachments = self.get_most_recent(session)
         elif intent == 'get_paper':
             resp_msg = self.get_paper(None, 99)
         elif intent == 'get_recommended':
-            resp_msg = self.get_recommended(session)
+            resp_msg, attachments = self.get_recommended(session)
         elif intent == 'get_similar_papers':
             resp_msg = self.get_similar(99)
         elif intent == 'get_top_recent':
@@ -109,7 +109,7 @@ class ApiAiIntentHandler(object):
         attached_papers = []
         for i, p in enumerate(papers):
             attached_papers.append(paper_snippet(p, i + 1))
-        return build_message( text="*Your Library*", markdown=False, parts=attached_papers)
+        return build_message( text="*Your Library*", markdown=False, parts=attached_papers), attached_papers
 
     def get_most_recent(self, session):
         """ Get most recently published papers within the user's search
@@ -120,7 +120,8 @@ class ApiAiIntentHandler(object):
         attached_papers = []
         for i, p in enumerate(papers):
             attached_papers.append(paper_snippet(p, i + 1))
-        return build_message( text="*Your Most Recent*", markdown=False, parts=attached_papers)
+
+        return build_message( text="*Your Most Recent*", markdown=False, parts=attached_papers), attached_papers[:5]
 
     def get_paper(self, set, pid):
         """ Return specified paper from within the set. """
@@ -137,9 +138,9 @@ class ApiAiIntentHandler(object):
         recommendedURL = ASP_BaseURL + "/recommend"
         papers = papers_from_embedded_script(recommendedURL, session)
         attached_papers = []
-        for p in papers:
-            attached_papers.append(paper_snippet(p))
-        return build_message( text="*Your Recommended*", markdown=False, parts=attached_papers)
+        for i, p in enumerate(papers):
+            attached_papers.append(paper_snippet(p, i + 1))
+        return build_message( text="*Your Recommended*", markdown=False, parts=attached_papers), attached_papers[:5]
 
     def get_top_recent(self, session):
         """
@@ -150,9 +151,9 @@ class ApiAiIntentHandler(object):
         topURL = ASP_BaseURL + "/top" # default filters
         papers = papers_from_embedded_script(topURL, session=session)
         attached_papers = []
-        for p in papers:
-            attached_papers.append(paper_snippet(p))
-        return build_message( text="*Your Library*", markdown=False, parts=attached_papers)
+        for i, p in enumerate(papers):
+            attached_papers.append(paper_snippet(p, i + 1))
+        return build_message( text="*Your Library*", markdown=False, parts=attached_papers), attached_papers[:5]
 
     def get_similar(self, pid):
         """ Get papers similar in content to the named paper. """

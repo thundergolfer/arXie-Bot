@@ -26,8 +26,8 @@ def paper_snippet( paper, number ):
     entry += '<{}|{}>\n'.format( paper['link'],
                                  str(number) + '. ' + paper['title'].replace('\n',' '))
     # make authors and date line
-    entry += '{} - {}\n'.format( ', '.join(paper['authors']),
-                                  paper['originally_published_time']) # authors are in bold
+    entry += '{} - {}\n'.format(', '.join(paper['authors']).encode('utf-8'),
+                                paper['originally_published_time']) # authors are in bold
     # make PDF link line
     entry += '<{}|PDF>\n'.format(make_pdf_link(paper['pid']))
     snippet['text'] = entry
