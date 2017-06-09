@@ -1,5 +1,7 @@
 import json
 
+from bot.discussions import reddit_conversations
+
 ASP_BaseURL = 'http://www.arxiv-sanity.com/'
 
 
@@ -19,7 +21,7 @@ def make_pdf_link(paper_id):
     return ASP_BaseURL + 'pdf/' + str(paper_id) + '.pdf'
 
 
-def paper_snippet( paper, number, include_abstract=False ):
+def paper_snippet( paper, number, include_abstract=False, include_discussions=False):
     snippet = {}
     entry = ""
     # Make title line with link to article
@@ -33,8 +35,14 @@ def paper_snippet( paper, number, include_abstract=False ):
         entry += '-----------------------------\n'
         entry += paper['abstract'] + '\n'
         entry += '-----------------------------\n'
+
     # make PDF link line
     entry += '<{}|PDF>\n'.format(make_pdf_link(paper['pid']))
+
+    if include_discussions:
+        subreddit, link, num_comments = reddit_conversations(paper['link'])
+        entry += '<{}|{} Discussion. {} comments\n'.format(link, subreddit, num_comments)
+        
     snippet['text'] = entry
     snippet['fallback'] = paper['title']
     return snippet
