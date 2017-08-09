@@ -1,6 +1,7 @@
-from bot.formatter import build_message, paper_snippet, make_pdf_link
+from mock import patch
 import json
 
+from bot.formatter import build_message, paper_snippet, make_pdf_link
 
 def test_build_message_markdown_false():
     test_text = "This is some text, yay."
@@ -39,3 +40,25 @@ def test_paper_snippet():
     }
 
     assert expected_snippet == paper_snippet(paper, 1)
+
+@patch('bot.formatter.reddit_conversations')
+def test_paper_snippet_with_reddit_discussions(mock_reddit_conversations):
+    mock_reddit_conversations.return_value = (
+        'r/helloworld',
+        'www.link.com',
+        30
+    )
+    paper = {
+        'link': "www.paper_link.com",
+        'title': "A Paper Title",
+        'authors': ['A. Scott', 'F. Itzgerald', 'M. Wallis'],
+        'originally_published_time': '3:30 pm',
+        'pid': 123982409
+    }
+
+    expected_snippet = {
+        'fallback': 'A Paper Title',
+        'text': '<www.paper_link.com|1. A Paper Title>\nA. Scott, F. Itzgerald, M. Wallis - 3:30 pm\n<http://www.arxiv-sanity.com/pdf/123982409.pdf|PDF>\n<www.link.com|r/helloworld Discussion. 30 comments\n'
+    }
+
+    assert expected_snippet == paper_snippet(paper, 1, include_discussions=True)
