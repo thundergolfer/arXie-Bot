@@ -12,7 +12,7 @@ def load_db():
     try:
         with open(LOGIN_DB, 'r') as fp:
             logins = json.load(fp)
-    except IOError:
+    except (IOError, ValueError):
         create_db()
 
     return logins

@@ -6,4 +6,4 @@ RUN apt-get install -y gcc build-essential
 RUN apt-get install -y python-dev
 RUN apt-get -y install python-numpy
 RUN pip install -r requirements.txt
-CMD python ./bot/app.py
+CMD python -m bot.app
