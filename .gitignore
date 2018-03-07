@@ -116,3 +116,5 @@ site/
 
 # Login Details file
 */logins.json
+
+.private_env

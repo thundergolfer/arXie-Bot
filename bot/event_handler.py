@@ -14,7 +14,10 @@ from bot.accounts import get_user, update_with_user
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
 
-TASKS = { "sign-up" : "SIGNUP"}
+TASKS = {
+    "sign-up": "SIGNUP"
+}
+
 
 class RtmEventHandler(object):
     def __init__(self, slack_clients, msg_writer, intent_handler):

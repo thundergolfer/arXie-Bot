@@ -17,12 +17,15 @@ def load_db():
 
     return logins
 
+
 def create_db():
     with open(LOGIN_DB, 'w') as fp:
         json.dump({}, fp)
 
+
 def erase_db():
     create_db()
+
 
 def update_with_user(team, slack_user, username, pw):
     logins = load_db()
@@ -31,7 +34,8 @@ def update_with_user(team, slack_user, username, pw):
     if slack_user not in logins[team]:
         logins[team][slack_user] = {}
         logins[team][slack_user]['username'] = username
-        logins[team][slack_user]['password'] = base64.encodestring(encrypt(pw)).decode('utf-8')
+        pw = base64.encodestring(encrypt(pw)).decode('utf-8')
+        logins[team][slack_user]['password'] = pw
         with open(LOGIN_DB, 'w') as fp:
             json.dump(logins, fp)
 
@@ -45,6 +49,7 @@ def add_user(team, slack_user, username, pw):
     with open(LOGIN_DB, 'w') as fp:
         json.dump(logins, fp)
 
+
 def get_user(team, slack_user):
     logins = load_db()
     if team in logins and slack_user in logins[team]:
@@ -55,6 +60,7 @@ def get_user(team, slack_user):
         return user, pw
 
     return None, None
+
 
 def delete_user(team, slack_user):
     logins = load_db()
