@@ -49,7 +49,7 @@ class LocalAccountManager():
             with open(LOGIN_DB, 'r') as fp:
                 logins = json.load(fp)
         except (IOError, ValueError):
-            create_db()
+            self.create_db()
 
         return logins
 
@@ -57,11 +57,8 @@ class LocalAccountManager():
         with open(LOGIN_DB, 'w') as fp:
             json.dump({}, fp)
 
-    def erase_db(self):
-        create_db()
-
     def update_with_user(self, team, slack_user, username, pw):
-        logins = load_db()
+        logins = self.load_db()
         if team not in logins:
             logins[team] = {}
         if slack_user not in logins[team]:
@@ -73,7 +70,7 @@ class LocalAccountManager():
                 json.dump(logins, fp)
 
     def add_user(self, team, slack_user, username, pw):
-        logins = load_db()
+        logins = self.load_db()
         if team not in logins:
             logins[team] = {}
         logins[team][slack_user]['username'] = username
@@ -82,7 +79,7 @@ class LocalAccountManager():
             json.dump(logins, fp)
 
     def get_user(self, team, slack_user):
-        logins = load_db()
+        logins = self.load_db()
         if team in logins and slack_user in logins[team]:
             user = logins[team][slack_user]['username']
             encrypted_pw = logins[team][slack_user]['password'].encode('utf-8')
@@ -93,7 +90,7 @@ class LocalAccountManager():
         return None, None
 
     def delete_user(self, team, slack_user):
-        logins = load_db()
+        logins = self.load_db()
         del logins[team][slack_user]
         with open(LOGIN_DB, 'w') as fp:
             json.dump(logins, fp)
