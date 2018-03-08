@@ -33,7 +33,7 @@ to either receive some existing login details from you, or ask you
 to message it some fresh ones to use.
 
 As you have probably figured, this requires messaging through Slack a password,
-which is god-awful security. Though an arxiv-sanity.com account is a pretty low 
+which is god-awful security. Though an arxiv-sanity.com account is a pretty low
 value target, it is still something that needs to be fixed.
 
 The first step will probably involve moving to a process whereby Arxie-Bot
@@ -87,6 +87,37 @@ Supply a query and search against the papers in *arxiv-sanity.com*.
 You can use `virtualenv arxie-env` to create a virtual environment called "arxie-env". Running `pip install -r requirements.txt`.
 
 You will require an [*API AI*](https://api.ai/) token and a *Slack API Token* for the ArXie-Bot, which is accessible once the bot has been adding to your team ([details here for Slack](https://api.slack.com/bot-users)). Add these tokens as environment variables and the ArXie bot will pick them up.
+
+#### Running Locally
+
+The following environment variables must be populated:
+
+```
+APIAI_TOKEN=<GET FROM https://api.ai/>
+SLACK_TOKEN=<GET A 'Bot user OAuth access token'>
+
+ARXIE_DB_TOKEN=<ANY HIGH-ENTROPY STRING>
+ENV="DEV"
+```
+
+Run `python -m bot.app`
+
+#### Deployment and Running in 'Prod'
+
+Arxie-bot can be deployed to the Google Cloud by following and adapting [*Build a Slack Bot with Node.js on Kubernetes*](https://codelabs.developers.google.com/codelabs/cloud-slack-bot/index.html?index=..%2F..%2Findex#4).
+
+The following environment variables must be populated:
+
+```
+APIAI_TOKEN=<GET FROM https://api.ai/>
+SLACK_TOKEN=<GET A 'Bot user OAuth access token'>
+
+ARXIE_DB_TOKEN=<ANY HIGH-ENTROPY STRING>
+DEV="PROD"
+PROJECT_ID=<YOUR GCLOUD PROJECT ID>
+```
+
+When in production, Arxie-bot uses [*Google Datastore*](https://cloud.google.com/datastore/) to store `arxiv-sanity.com` account details for Slack users.
 
 ### License
 This project is under the [MIT License](https://opensource.org/licenses/MIT).
