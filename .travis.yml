@@ -3,6 +3,7 @@ python:
   - "3.5"
 env:
   - APIAI_TOKEN=thisisisntarealtoken ARXIE_DB_TOKEN="apian cleft dogs cats t fuss"
+  - PROJECT_ID=arxie-bot ENV=DEV
 install:
   - pip install -r requirements.txt
 branches:
