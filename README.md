@@ -104,7 +104,7 @@ Run `python -m bot.app`
 
 #### Deployment and Running in 'Prod'
 
-Arxie-bot can be deployed to the Google Cloud by following and adapting [*Build a Slack Bot with Node.js on Kubernetes*](https://codelabs.developers.google.com/codelabs/cloud-slack-bot/index.html?index=..%2F..%2Findex#4).
+Arxie-bot can be deployed to the Google Cloud by following and adapting [*Build a Slack Bot with Node.js on Kubernetes*](https://codelabs.developers.google.com/codelabs/cloud-slack-bot/index.html?index=..%2F..%2Findex#4). The [`kubernetes/`](/kubernetes) folder has the config and more info.
 
 The following environment variables must be populated:
 
