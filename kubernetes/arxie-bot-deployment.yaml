@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: arxie-bot
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: arxie-bot
+    spec:
+      containers:
+      - name: master
+        image: gcr.io/arxie-bot/arxie-bot:v4
+        env:
+          - name: APIAI_TOKEN
+            valueFrom:
+                secretKeyRef:
+                    name: secretconfig # see here: https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret-manually
+                    key: apiai_token
+          - name: SLACK_TOKEN
+            valueFrom:
+                secretKeyRef:
+                    name: secretconfig
+                    key: slack_token
+          - name: ARXIE_DB_TOKEN
+            value: blahblah
+          - name: PROJECT_ID
+            value: arxie-bot
