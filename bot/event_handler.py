@@ -9,7 +9,7 @@ import sqlite3
 import requests
 
 from bot.site_scraping import papers_from_embedded_script
-from bot.accounts import get_user, update_with_user
+from bot.accounts import newAccountManager
 
 logger = logging.getLogger(__name__)
 API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
@@ -25,8 +25,9 @@ class RtmEventHandler(object):
         self.msg_writer = msg_writer
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN)
+        self.account_manager = newAccountManager(os.getenv('ENV') == 'DEV')
         self.sessions = {}
-        self.tasks = [] # For mult-message spanning tasks
+        self.tasks = []  # For mult-message spanning tasks
         self.local_intent = None
 
     def handle(self, event):
@@ -53,7 +54,7 @@ class RtmEventHandler(object):
     def _handle_login(self, event):
         # Log in message sender if they exist
         logging.info("Handling login.")
-        user, pw = get_user(event['team'], event['user'])
+        user, pw = self.account_manager.get_user(event['team'], event['user'])
         if not user or not pw:
             # Are the login details in the message?
             user, pw = self.parse_login_details(event)
@@ -61,8 +62,8 @@ class RtmEventHandler(object):
         if user and pw:
             # then login
             status_code, session = self._login(user, pw)
-            self.sessions[event['user']] = session # we're gonna keep needing this
-            update_with_user(event['team'], event['user'], user, pw)
+            self.sessions[event['user']] = session  # we're gonna keep needing this
+            self.account_manager.update_with_user(event['team'], event['user'], user, pw)
 
             return True
 
