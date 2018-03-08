@@ -36,7 +36,10 @@ class CloudDatastoreAccountManager():
         key = client.key('Login', slack_user)
         user_details = client.get(key)
 
-        return user_details['username'], user_details['password']
+        if user_details:
+            return user_details['username'], user_details['password']
+
+        return None, None
 
 
 class LocalAccountManager():
