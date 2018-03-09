@@ -24,11 +24,12 @@ class Messenger(object):
 
     def write_help_message(self, channel_id):
         bot_uid = self.clients.bot_user_id()
+        docs_url = "https://github.com/thundergolfer/arXie-Bot#how-to-basics"
         txt = '{}\n{}\n{}\n{}'.format(
-            "I'm your friendly Slack bot written in Python.  I'll *_respond_* to the following commands:",
-            "> `hi <@" + bot_uid + ">` - I'll respond with a randomized greeting mentioning your user. :wave:",
-            "> `<@" + bot_uid + "> joke` - I'll tell you one of my finest jokes, with a typing pause for effect. :laughing:",
-            "> `<@" + bot_uid + "> attachment` - I'll demo a post with an attachment using the Web API. :paperclip:")
+            "I'm a Slack bot written to keep you update to date with ML.  I *_respond_* to a number of commands:",
+            "> `hi <@{}>` - I'll respond with a randomized greeting mentioning your user. :wave:".format(bot_uid),
+            "> `<@{}> [COMMAND] - I respond to a number of natural language commands. See docs here: {}`".format(bot_uid, docs_url)
+            "> `<@{}> joke` - I'll tell you one of my finest jokes, with a typing pause for effect. :laughing:".format(bot_uid))
         self.send_message(channel_id, txt)
 
     def write_error(self, channel_id, err_msg):
