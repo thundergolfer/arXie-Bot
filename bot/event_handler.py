@@ -1,4 +1,3 @@
-import os
 import json
 import logging
 import apiai
@@ -72,10 +71,12 @@ class RtmEventHandler(object):
         logging.info("Logging in {} to www.arxiv-sanity.com".format(user))
         login_url = 'http://www.arxiv-sanity.com/login'
         s = requests.Session()
-        s.headers.update({'Referer' : 'http://arxiv-sanity.com/'}) # TODO add more relevant headers
+        s.headers.update(
+            {'Referer': 'http://arxiv-sanity.com/'}
+        )  # TODO add more relevant headers
         payload = {
-            'username' : user,
-            'password' : pw
+            'username': user,
+            'password': pw
         }
         p = s.post(login_url, data=payload)
         return p.status_code, s
@@ -83,13 +84,12 @@ class RtmEventHandler(object):
     def parse_login_details(self, event):
         msg_text = event['text']
         logging.info("Parsing login details because of this msg: {}".format(msg_text))
-        msg_text = msg_text[msg_text.index('>')+2:] # remove @arXie-bot from text
+        msg_text = msg_text[msg_text.index('>')+2:]  # remove @arXie-bot from text
         tokens = msg_text.split(' ')
         # Check string format
         if len(tokens) == 4 and tokens[0] == 'user:' and tokens[2] == 'pw:':
             return tokens[1], tokens[3]
         else:
-            # self.msg_writer.send_message(event['channel'], "Sorry, that's not the right message format.")
             return None, None
 
     def _handle_message(self, event):
@@ -98,17 +98,20 @@ class RtmEventHandler(object):
             return
 
         msg_txt = event['text']
-        if not self.clients.is_bot_mention(msg_txt) and not self._is_direct_message(event['channel']):
+
+        at_mentioned = self.clients.is_bot_mention(msg_txt)
+        direct_messaged = self._is_direct_message(event['channel'])
+        if not at_mentioned and not direct_messaged:
             return
 
         # e.g. user typed: "@arxie-bot tell me a joke!"
-        msg_txt = msg_txt[msg_txt.index('>')+2:] # remove @NAME from msg
+        msg_txt = msg_txt[msg_txt.index('>')+2:]  # remove @NAME from msg
         if 'help' in msg_txt:
             self.msg_writer.write_help_message(event['channel'])
         elif 'attachment' in msg_txt:
             self.msg_writer.demo_attachment(event['channel'])
         else:
-            if event['user'] in self.sessions or self._handle_login(event): # creates a session
+            if event['user'] in self.sessions or self._handle_login(event):  # creates a session
                 # determine intent
                 if self.local_intent:
                     intent = self.local_intent
@@ -127,7 +130,7 @@ class RtmEventHandler(object):
                                              "Please enter login details like this:\n"
                                              "user: {username} pw: {password}")
 
-    def process_message(self, msg_txt ):
+    def process_message(self, msg_txt):
         """
         Process the message body through API AI's system to get the intent
         of the message and update the context if needed.
@@ -137,12 +140,13 @@ class RtmEventHandler(object):
         request.query = msg_txt
         # get json response as bytes and decode it into a string
         resp = request.getresponse().read().decode('utf-8')
-        resp = json.loads(resp) # convert string to json dict
+        resp = json.loads(resp)  # convert string to json dict
 
-        return { 'contexts' : resp['result']['contexts'] if 'contexts' in resp else None,
-                 'intent' : resp['result']['metadata']['intentName'],
-                 'parameters' : resp['result']['parameters']
-               }
+        return {
+            'contexts': resp['result']['contexts'] if 'contexts' in resp else None,
+            'intent': resp['result']['metadata']['intentName'],
+            'parameters': resp['result']['parameters']
+        }
 
     def _is_direct_message(self, channel):
         """Check if channel is a direct message channel

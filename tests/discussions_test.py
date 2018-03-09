@@ -3,9 +3,11 @@ from tests.support.reddit_search_api import example_response_str
 
 from bot.discussions import reddit_conversations
 
+
 class MockResponse():
     def __init__(self):
         self.content = example_response_str
+
 
 @patch('bot.site_scraping.requests.get')
 def test_reddit_conversations(mock_get):

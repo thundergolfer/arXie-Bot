@@ -11,7 +11,7 @@ def build_message(text='Default Text', markdown=True, parts=None):
         message = {}
         message['text'] = text
         message['mrkdwn'] = markdown
-        json_str = json.dumps(message) # validate json. TODO should catch failure
+        json_str = json.dumps(message)  # validate json. TODO should catch failure
         return json_str
     return text
 
@@ -21,15 +21,15 @@ def make_pdf_link(paper_id):
     return ASP_BaseURL + 'pdf/' + str(paper_id) + '.pdf'
 
 
-def paper_snippet( paper, number, include_abstract=False, include_discussions=False):
+def paper_snippet(paper, number, include_abstract=False, include_discussions=False):
     snippet = {}
     entry = ""
     # Make title line with link to article
-    entry += '<{}|{}>\n'.format( paper['link'],
-                                 str(number) + '. ' + paper['title'].replace('\n',' '))
+    entry += '<{}|{}>\n'.format(paper['link'],
+                                str(number) + '. ' + paper['title'].replace('\n', ' '))
     # make authors and date line
     entry += '{} - {}\n'.format(', '.join(paper['authors']),
-                                paper['originally_published_time']) # authors are in bold
+                                paper['originally_published_time'])  # authors are in bold
 
     if include_abstract:
         entry += '-----------------------------\n'
@@ -42,7 +42,7 @@ def paper_snippet( paper, number, include_abstract=False, include_discussions=Fa
     if include_discussions:
         subreddit, link, num_comments = reddit_conversations(paper['link'])
         entry += '<{}|{} Discussion. {} comments\n'.format(link, subreddit, num_comments)
-        
+
     snippet['text'] = entry
     snippet['fallback'] = paper['title']
     return snippet

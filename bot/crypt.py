@@ -1,5 +1,4 @@
 import struct
-import os
 from Crypto.Cipher import AES
 
 from bot.settings import config

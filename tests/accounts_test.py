@@ -4,7 +4,7 @@ import copy
 import pytest
 
 from bot.crypt import encrypt
-from bot.accounts import LOGIN_DB, LocalAccountManager
+from bot.accounts import LocalAccountManager
 
 MOCK_LOGINS = {
     "ONETEAM": {
@@ -50,8 +50,12 @@ def test_create_db(mock_dump):
 def test_update_with_user_new_user_new_team(mock_json):
     account_manager.update_with_user("NEWTEAM", "newuser", "NEWUSERNAME", "NEWPASSWORD")
     new_logins = copy.deepcopy(MOCK_LOGINS)
-    new_logins["NEWTEAM"] = {"newuser": {"username": "NEWUSERNAME",
-                                         "password": base64.encodestring(encrypt("NEWPASSWORD")).decode('utf-8')}}
+    new_logins["NEWTEAM"] = {
+        "newuser": {
+            "username": "NEWUSERNAME",
+            "password": base64.encodestring(encrypt("NEWPASSWORD")).decode('utf-8')
+        }
+    }
 
     mock_json.assert_called_once_with(new_logins, ANY)
 
@@ -61,8 +65,10 @@ def test_update_with_user_new_user_new_team(mock_json):
 def test_update_with_user_new_user_existing_team(mock_json):
     account_manager.update_with_user("ONETEAM", "newuser", "NEWUSERNAME", "NEWPASSWORD")
     new_logins = copy.deepcopy(MOCK_LOGINS)
-    new_logins["ONETEAM"]["newuser"] = {"username": "NEWUSERNAME",
-                                        "password": base64.encodestring(encrypt("NEWPASSWORD")).decode('utf-8')}
+    new_logins["ONETEAM"]["newuser"] = {
+        "username": "NEWUSERNAME",
+        "password": base64.encodestring(encrypt("NEWPASSWORD")).decode('utf-8')
+    }
 
     mock_json.assert_called_once_with(new_logins, ANY)
 

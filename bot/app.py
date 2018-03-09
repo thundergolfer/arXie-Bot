@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import logging
-import os
 
 from beepboop import resourcer
 from beepboop import bot_manager
@@ -21,7 +20,9 @@ if __name__ == "__main__":
     slack_token = config.slack_token
 
     if slack_token == "":
-        logging.info("SLACK_TOKEN env var not set, expecting token to be provided by Resourcer events")
+        logging.info(
+            "SLACK_TOKEN env var not set, expecting token to be provided by Resourcer events"
+        )
         slack_token = None
         botManager = bot_manager.BotManager(spawn_bot)
         res = resourcer.Resourcer(botManager)

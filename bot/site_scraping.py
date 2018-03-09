@@ -34,18 +34,18 @@ def clean_json(json):
     return json.replace(r'\\', 'M@THJ@X')
 
 
-def papers_from_embedded_script( url, session=None ):
+def papers_from_embedded_script(url, session=None):
     """
     Extract papers data from script embedded in ASP site's HTML.
     Note: looks for "var papers = " in a <script> </script> body.
     """
-    if session: resp = session.get(url)
-    else:       resp = requests.get(url)
+    if session:
+        resp = session.get(url)
+    else:
+        resp = requests.get(url)
 
     soup = BeautifulSoup(resp.text, 'html.parser')
     scripts = soup.find_all('script')
-    #p = re.compile('var papers = (\[.*?\];)', re.MULTILINE)
-    pattern = re.compile('var papers = \[[.\s\S]*?\];')
 
     str_scripts = [str(script.string) for script in scripts if script.string]
     papers_js = [script for script in str_scripts if 'var papers = ' in script][0]
