@@ -1,18 +1,16 @@
 import os
 import json
 import logging
-import re
-# from private_settings import apiai_access_token
 import apiai
 
-import sqlite3
 import requests
 
-from bot.site_scraping import papers_from_embedded_script
 from bot.accounts import newAccountManager
+from bot.settings import config
+
 
 logger = logging.getLogger(__name__)
-API_ACCESS_TOKEN = os.environ['APIAI_TOKEN']
+API_ACCESS_TOKEN = config.apiai_token
 
 TASKS = {
     "sign-up": "SIGNUP"
@@ -25,7 +23,7 @@ class RtmEventHandler(object):
         self.msg_writer = msg_writer
         self.intent_handler = intent_handler
         self.api_ai = apiai.ApiAI(API_ACCESS_TOKEN)
-        self.account_manager = newAccountManager(os.getenv('ENV') == 'DEV')
+        self.account_manager = newAccountManager(config.ENV)
         self.sessions = {}
         self.tasks = []  # For mult-message spanning tasks
         self.local_intent = None

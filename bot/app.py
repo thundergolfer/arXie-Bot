@@ -6,6 +6,7 @@ import os
 from beepboop import resourcer
 from beepboop import bot_manager
 
+from bot.settings import config
 from bot.slack_bot import SlackBot
 from bot.slack_bot import spawn_bot
 
@@ -14,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
 
-    log_level = os.getenv("LOG_LEVEL", "INFO")
+    log_level = config.log_level
     logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s', level=log_level)
 
-    slack_token = os.getenv("SLACK_TOKEN", "")
+    slack_token = config.slack_token
 
     if slack_token == "":
         logging.info("SLACK_TOKEN env var not set, expecting token to be provided by Resourcer events")

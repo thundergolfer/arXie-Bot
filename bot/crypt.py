@@ -2,7 +2,9 @@ import struct
 import os
 from Crypto.Cipher import AES
 
-db_token = os.environ['ARXIE_DB_TOKEN']
+from bot.settings import config
+
+db_token = config.db_token
 
 
 def pad16(ss):

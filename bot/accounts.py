@@ -1,9 +1,11 @@
 import json
 import os
 import base64
-from bot.crypt import encrypt, decrypt
 
 from google.cloud import datastore
+
+from bot.crypt import encrypt, decrypt
+from bot.settings import config
 
 LOGIN_DB_FILENAME = "logins.json"
 LOGIN_DB = os.path.join(os.path.dirname(__file__), LOGIN_DB_FILENAME)
@@ -15,7 +17,7 @@ def newAccountManager(dev_env):
 
 class CloudDatastoreAccountManager():
     def __init__(self):
-        self.project_id = os.environ['PROJECT_ID']
+        self.project_id = config.project_id
 
     def update_with_user(self, team, slack_user, username, pw):
         client = datastore.Client(self.project_id, namespace=team)
